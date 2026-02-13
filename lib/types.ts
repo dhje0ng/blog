@@ -8,6 +8,7 @@ export type PostSummary = {
   updatedAt: string;
   readingMinutes: number;
   coverImage?: string;
+  content?: string;
 };
 
 export type CategorySummary = {
