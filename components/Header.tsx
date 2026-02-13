@@ -1,9 +1,10 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navItems = [
+const navItems: Array<{ label: string; href: Route }> = [
   { label: "Overview", href: "/overview" },
   { label: "Collection", href: "/collection" },
   { label: "Articles", href: "/articles" }
