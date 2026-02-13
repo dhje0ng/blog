@@ -4,19 +4,14 @@ export type PostSummary = {
   slug: string;
   summary: string;
   tags: string[];
+  category: string;
   updatedAt: string;
   readingMinutes: number;
   coverImage?: string;
-  category?: string;
-  author?: string;
 };
-
-export type FeaturedPost = PostSummary;
-
-export type PostListItem = PostSummary;
 
 export type CategorySummary = {
   name: string;
-  postCount: number;
-  representativePost: PostSummary;
+  count: number;
+  description: string;
 };
