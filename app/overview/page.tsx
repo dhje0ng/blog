@@ -8,9 +8,9 @@ import { getPosts } from "@/lib/notion";
 export const dynamic = "force-dynamic";
 
 const PROFILE = {
-  name: "morethanmin",
-  handle: "@morethan-log",
-  intro: "프론트엔드 개발자 · 노션 기반 글쓰기를 꾸준히 기록합니다.",
+  name: "Donghyeon Jeong",
+  handle: "@dhjeong",
+  intro: "Cyber Security Engineer",
   avatar: "https://avatars.githubusercontent.com/u/9919?v=4"
 };
 
