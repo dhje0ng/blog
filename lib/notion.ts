@@ -1,10 +1,28 @@
-import { Client } from "@notionhq/client";
 import { CategorySummary, PostSummary } from "./types";
 
-const notionToken = process.env.NOTION_API_KEY;
 const notionDatabaseId = process.env.NOTION_DATABASE_ID;
-const notion = notionToken ? new Client({ auth: notionToken }) : null;
 const NOTION_TIMEOUT_MS = 5000;
+const NOTION_VERSION = "2022-06-28";
+
+type NotionQueryResponse = {
+  results?: Array<{
+    id: string;
+    cover?: unknown;
+    properties?: Record<string, unknown>;
+  }>;
+};
+
+function normalizeDatabaseId(raw: string): string {
+  const trimmed = raw.trim();
+  const idFromUrl = trimmed.match(/[a-f0-9]{32}/i)?.[0];
+  const compact = (idFromUrl ?? trimmed).replace(/-/g, "");
+
+  if (!/^[a-f0-9]{32}$/i.test(compact)) {
+    throw new Error("NOTION_DATABASE_ID_INVALID_FORMAT");
+  }
+
+  return `${compact.slice(0, 8)}-${compact.slice(8, 12)}-${compact.slice(12, 16)}-${compact.slice(16, 20)}-${compact.slice(20)}`;
+}
 
 function extractText(value: unknown): string {
   if (!value || typeof value !== "object") return "";
@@ -20,6 +38,14 @@ function extractCategory(value: unknown): string {
   if (!value || typeof value !== "object") return "Uncategorized";
   const typed = value as { select?: { name?: string } | null };
   return typed.select?.name ?? "Uncategorized";
+}
+
+
+function extractTags(value: unknown): string[] {
+  if (!value || typeof value !== "object") return [];
+  if (!("multi_select" in value)) return [];
+  const typed = value as { multi_select?: Array<{ name?: string }> };
+  return (typed.multi_select ?? []).map((tag) => tag.name ?? "").filter(Boolean);
 }
 
 function extractCover(source: unknown): string | undefined {
@@ -51,60 +77,72 @@ function withTimeout<T>(promise: Promise<T>): Promise<T> {
   ]);
 }
 
+function parseUpdated(properties: Record<string, unknown> | undefined): string {
+  const updatedProp = properties?.Updated;
+  if (updatedProp && typeof updatedProp === "object" && "date" in updatedProp) {
+    const date = (updatedProp as { date: { start?: string } | null }).date?.start;
+    if (date) return date;
+  }
+  return new Date().toISOString().split("T")[0];
+}
+
+async function queryPublicDatabase(databaseId: string): Promise<NotionQueryResponse> {
+  const response = await withTimeout(
+    fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Notion-Version": NOTION_VERSION
+      },
+      body: JSON.stringify({ page_size: 100 }),
+      cache: "no-store"
+    })
+  );
+
+  if (!response.ok) {
+    throw new Error("NOTION_FETCH_FAILED");
+  }
+
+  return (await response.json()) as NotionQueryResponse;
+}
+
 export async function getPosts(): Promise<PostSummary[]> {
-  if (!notion || !notionDatabaseId) {
+  if (!notionDatabaseId) {
     throw new Error("NOTION_CONFIG_MISSING");
   }
 
-  const notionClient = notion;
-  const databaseId = notionDatabaseId;
+  const databaseId = normalizeDatabaseId(notionDatabaseId);
+  const payload = await queryPublicDatabase(databaseId);
 
-  try {
-    const response = await withTimeout(
-      notionClient.databases.query({
-        database_id: databaseId,
-        sorts: [{ property: "Updated", direction: "descending" }],
-        page_size: 100
-      })
-    );
+  const posts = (payload.results ?? []).reduce<PostSummary[]>((acc, result) => {
+    const props = result.properties;
+    if (!props) return acc;
 
-    return response.results.reduce<PostSummary[]>((acc, result) => {
-      if (!("properties" in result)) return acc;
+    const title = extractText(props.Title);
+    const slug = extractText(props.Slug) || result.id;
+    const summary = extractText(props.Summary);
+    const category = extractCategory(props.Category);
+    const content = extractText(props.Content) || summary;
 
-      const title = extractText(result.properties.Title);
-      const slug = extractText(result.properties.Slug) || result.id;
-      const summary = extractText(result.properties.Summary);
-      const category = extractCategory(result.properties.Category);
-      const content = extractText(result.properties.Content) || summary;
+    const tags = extractTags(props.Tags);
 
-      const tags =
-        "multi_select" in (result.properties.Tags ?? {})
-          ? (result.properties.Tags as { multi_select: Array<{ name: string }> }).multi_select.map((tag) => tag.name)
-          : [];
+    acc.push({
+      id: result.id,
+      title: title || "Untitled",
+      slug,
+      summary,
+      category,
+      tags,
+      updatedAt: parseUpdated(props),
+      readingMinutes: Math.max(3, Math.ceil(content.length / 220)),
+      coverImage: extractCover(result),
+      content
+    });
 
-      const updatedAt =
-        "date" in (result.properties.Updated ?? {})
-          ? (result.properties.Updated as { date: { start: string } | null }).date?.start ?? ""
-          : "";
+    return acc;
+  }, []);
 
-      acc.push({
-        id: result.id,
-        title: title || "Untitled",
-        slug,
-        summary,
-        category,
-        tags,
-        updatedAt: updatedAt || new Date().toISOString().split("T")[0],
-        readingMinutes: Math.max(3, Math.ceil(content.length / 220)),
-        coverImage: extractCover(result),
-        content
-      });
-
-      return acc;
-    }, []);
-  } catch {
-    throw new Error("NOTION_FETCH_FAILED");
-  }
+  return posts.sort((a, b) => +new Date(b.updatedAt) - +new Date(a.updatedAt));
 }
 
 export async function getPostBySlug(slug: string): Promise<PostSummary | null> {

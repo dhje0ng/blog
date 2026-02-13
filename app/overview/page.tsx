@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 const PROFILE = {
   name: "Donghyeon Jeong",
-  handle: "@dhjeong",
+  handle: "@dhjeongkr",
   intro: "Cyber Security Engineer",
   avatar: "https://avatars.githubusercontent.com/u/9919?v=4"
 };
