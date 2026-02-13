@@ -7,3 +7,13 @@ export type PostSummary = {
   updatedAt: string;
   readingMinutes: number;
 };
+
+export type FeaturedPost = PostSummary;
+
+export type PostListItem = PostSummary;
+
+export type CategorySummary = {
+  name: string;
+  postCount: number;
+  representativePost: PostSummary;
+};
