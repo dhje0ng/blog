@@ -21,14 +21,7 @@ function normalizePageId(raw: string): string {
   const idFromUrl = trimmed.match(/[a-f0-9]{32}/i)?.[0];
   const compact = (idFromUrl ?? trimmed).replace(/-/g, "");
 
-  console.log("[Notion Debug] normalizePageId input", {
-    hasUrlPattern: Boolean(idFromUrl),
-    rawLength: raw.length,
-    compactLength: compact.length
-  });
-
   if (!/^[a-f0-9]{32}$/i.test(compact)) {
-    console.log("[Notion Debug] normalizePageId invalid format", { raw });
     throw new Error("NOTION_DATABASE_ID_INVALID_FORMAT");
   }
 
@@ -109,12 +102,10 @@ function extractContentFromChildren(
 
 async function getDatabaseRecordMap() {
   if (!notionDatabaseId) {
-    console.log("[Notion Debug] NOTION_DATABASE_ID is missing");
     throw new Error("NOTION_CONFIG_MISSING");
   }
 
   const pageId = normalizePageId(notionDatabaseId);
-  console.log("[Notion Debug] fetching Notion database record map", { pageId });
   return notion.getPage(pageId);
 }
 
@@ -124,26 +115,17 @@ export async function getPosts(): Promise<PostSummary[]> {
   const blockMap = (recordMap.block ?? {}) as Record<string, { value?: Record<string, unknown> }>;
   const collectionMap = (recordMap.collection ?? {}) as Record<string, { value?: Record<string, unknown> }>;
 
-  console.log("[Notion Debug] recordMap loaded", {
-    blockCount: Object.keys(blockMap).length,
-    collectionCount: Object.keys(collectionMap).length
-  });
-
   const databasePage = Object.values(blockMap).find((entry) => {
     const value = entry.value;
     return value?.type === "collection_view_page" || value?.type === "collection_view";
   })?.value;
 
   if (!databasePage) {
-    console.log("[Notion Debug] database page not found in block map");
     throw new Error("NOTION_DATABASE_PAGE_NOT_FOUND");
   }
 
   const collectionId = databasePage.collection_id as string | undefined;
   if (!collectionId) {
-    console.log("[Notion Debug] collection_id missing on database page", {
-      databasePageId: databasePage.id
-    });
     throw new Error("NOTION_COLLECTION_ID_NOT_FOUND");
   }
 
@@ -158,23 +140,10 @@ export async function getPosts(): Promise<PostSummary[]> {
   const updatedId = resolveSchemaPropertyId(schema, ["updated", "date", "published", "publish date"]);
   const contentId = resolveSchemaPropertyId(schema, ["content", "body"]);
 
-  console.log("[Notion Debug] schema property mapping", {
-    collectionId,
-    titleId,
-    slugId,
-    summaryId,
-    categoryId,
-    tagsId,
-    updatedId,
-    contentId
-  });
-
   const rows = Object.values(blockMap)
     .map((entry) => entry.value)
     .filter((value): value is Record<string, unknown> => Boolean(value))
     .filter((value) => value.type === "page" && value.parent_id === collectionId);
-
-  console.log("[Notion Debug] rows extracted", { rowCount: rows.length, collectionId });
 
   const posts = rows
     .map((rowValue) => {
@@ -211,8 +180,6 @@ export async function getPosts(): Promise<PostSummary[]> {
       } satisfies PostSummary;
     })
     .filter((post) => Boolean(post.id));
-
-  console.log("[Notion Debug] posts transformed", { postCount: posts.length });
 
   return posts.sort((a, b) => +new Date(b.updatedAt) - +new Date(a.updatedAt));
 }
