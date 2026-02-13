@@ -95,41 +95,43 @@ export async function getPosts(): Promise<PostSummary[]> {
       sorts: [{ property: "Updated", direction: "descending" }]
     });
 
-    return response.results
-      .map((result) => {
-        if (!("properties" in result)) {
-          return null;
-        }
+    const posts: PostSummary[] = [];
 
-        const title = extractText(result.properties.Title);
-        const slug = extractText(result.properties.Slug) || result.id;
-        const summary = extractText(result.properties.Summary);
-        const tags =
-          "multi_select" in (result.properties.Tags ?? {})
-            ? (result.properties.Tags as { multi_select: Array<{ name: string }> }).multi_select.map((t) => t.name)
-            : [];
-        const updatedAt =
-          "date" in (result.properties.Updated ?? {})
-            ? (result.properties.Updated as { date: { start: string } | null }).date?.start ?? ""
-            : "";
-        const coverImage = extractCoverImage(result.properties.Cover);
-        const category = extractSelect(result.properties.Category);
-        const author = extractAuthor(result.properties.Author);
+    response.results.forEach((result) => {
+      if (!("properties" in result)) {
+        return;
+      }
 
-        return {
-          id: result.id,
-          title: title || "Untitled",
-          slug,
-          summary,
-          tags,
-          updatedAt: updatedAt || new Date().toISOString().split("T")[0],
-          readingMinutes: Math.max(3, Math.ceil(summary.length / 80)),
-          coverImage,
-          category,
-          author
-        } satisfies PostSummary;
-      })
-      .filter((post): post is PostSummary => Boolean(post));
+      const title = extractText(result.properties.Title);
+      const slug = extractText(result.properties.Slug) || result.id;
+      const summary = extractText(result.properties.Summary);
+      const tags =
+        "multi_select" in (result.properties.Tags ?? {})
+          ? (result.properties.Tags as { multi_select: Array<{ name: string }> }).multi_select.map((t) => t.name)
+          : [];
+      const updatedAt =
+        "date" in (result.properties.Updated ?? {})
+          ? (result.properties.Updated as { date: { start: string } | null }).date?.start ?? ""
+          : "";
+      const coverImage = extractCoverImage(result.properties.Cover);
+      const category = extractSelect(result.properties.Category);
+      const author = extractAuthor(result.properties.Author);
+
+      posts.push({
+        id: result.id,
+        title: title || "Untitled",
+        slug,
+        summary,
+        tags,
+        updatedAt: updatedAt || new Date().toISOString().split("T")[0],
+        readingMinutes: Math.max(3, Math.ceil(summary.length / 80)),
+        coverImage,
+        category,
+        author
+      });
+    });
+
+    return posts;
   } catch {
     return FALLBACK_POSTS;
   }
