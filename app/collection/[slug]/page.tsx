@@ -3,16 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { PostListItem } from "@/components/post/PostListItem";
-import { getPosts } from "@/lib/notion";
+import { getCategorySlug, getPosts } from "@/lib/notion";
 
-function slugifyCategory(name: string): string {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
+export const dynamic = "force-dynamic";
 
 type CategoryPageProps = {
   params: {
@@ -20,15 +13,9 @@ type CategoryPageProps = {
   };
 };
 
-export async function generateStaticParams() {
-  const posts = await getPosts();
-  const categorySlugs = [...new Set(posts.map((post) => slugifyCategory(post.category ?? "Uncategorized")))];
-  return categorySlugs.map((slug) => ({ slug }));
-}
-
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const posts = await getPosts();
-  const categoryName = posts.find((post) => slugifyCategory(post.category ?? "Uncategorized") === params.slug)?.category;
+  const categoryName = posts.find((post) => getCategorySlug(post.category) === params.slug)?.category;
 
   if (!categoryName) {
     return { title: "Collection not found" };
@@ -42,13 +29,13 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryDetailPage({ params }: CategoryPageProps) {
   const posts = await getPosts();
-  const filteredPosts = posts.filter((post) => slugifyCategory(post.category ?? "Uncategorized") === params.slug);
+  const filteredPosts = posts.filter((post) => getCategorySlug(post.category) === params.slug);
 
   if (!filteredPosts.length) {
     notFound();
   }
 
-  const categoryName = filteredPosts[0].category ?? "Uncategorized";
+  const categoryName = filteredPosts[0].category;
 
   return (
     <main>

@@ -1,67 +1,80 @@
+import Image from "next/image";
 import type { Route } from "next";
 import Link from "next/link";
 import { Header } from "@/components/Header";
-import { Hero } from "@/components/Hero";
-import { FeaturedPostCard } from "@/components/post/FeaturedPostCard";
 import { PostListItem } from "@/components/post/PostListItem";
 import { getPosts } from "@/lib/notion";
 
+export const dynamic = "force-dynamic";
+
+const PROFILE = {
+  name: "Donghyeon Jeong",
+  handle: "@dhjeong",
+  intro: "Cyber Security Engineer",
+  avatar: "https://avatars.githubusercontent.com/u/9919?v=4"
+};
+
 export default async function OverviewPage() {
   const posts = await getPosts();
-  const [featured, ...rest] = posts;
-  const latest = rest.slice(0, 4);
-  const highlighted = rest.slice(4, 8);
+  const popular = posts.slice(0, 3);
+  const recent = posts.slice(3);
 
   return (
     <main>
       <Header />
-      <Hero />
+      <section className="container overview-layout top-gap section-gap">
+        <aside className="profile-column">
+          <article className="profile-card">
+            <Image src={PROFILE.avatar} alt={`${PROFILE.name} profile`} className="profile-avatar" width={320} height={320} />
+            <h1>{PROFILE.name}</h1>
+            <p className="profile-handle">{PROFILE.handle}</p>
+            <p className="profile-intro">{PROFILE.intro}</p>
+            <div className="profile-meta-row">
+              <span>{posts.length} posts</span>
+              <span>Notion DB Sync</span>
+            </div>
+          </article>
 
-      <section className="container section-gap overview-main-grid">
-        <div>
-          <div className="section-title-row">
-            <h2>Editor&apos;s Pick</h2>
-            <p>이번 주 가장 주목할 아티클</p>
-          </div>
-          {featured ? <FeaturedPostCard post={featured} /> : null}
-        </div>
-
-        <aside className="overview-aside">
-          <h3>Quick Reads</h3>
-          <ul>
-            {rest.slice(0, 5).map((post) => (
-              <li key={post.id}>
-                <Link href={`/articles/${post.slug}` as Route}>{post.title}</Link>
-              </li>
-            ))}
-          </ul>
+          <article className="overview-intro-card">
+            <h2>Welcome 👋</h2>
+            <p>노션 데이터베이스와 연동된 블로그입니다. 기술, 디자인, 생산성에 관한 글을 정리합니다.</p>
+          </article>
         </aside>
-      </section>
 
-      <section className="container section-gap">
-        <div className="section-title-row">
-          <h2>Latest Writings</h2>
-          <p>최근 업데이트된 글</p>
-        </div>
-        <div className="list-layout">
-          {latest.map((post) => (
-            <PostListItem key={post.id} post={post} />
-          ))}
+        <div className="overview-content-column">
+          <section className="overview-section">
+            <div className="overview-section-head">
+              <h2>인기 아티클</h2>
+              <Link href="/articles" className="section-more-link">
+                더보기
+              </Link>
+            </div>
+            <div className="popular-grid">
+              {popular.map((post, index) => (
+                <Link key={post.id} href={`/articles/${post.slug}` as Route} className="popular-card">
+                  <span className="popular-rank">TOP {index + 1}</span>
+                  <h3>{post.title}</h3>
+                  <p>{post.summary}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="overview-section">
+            <div className="overview-section-head">
+              <h2>최근 아티클</h2>
+              <Link href="/articles" className="section-more-link">
+                더보기
+              </Link>
+            </div>
+            <div className="list-layout">
+              {recent.map((post) => (
+                <PostListItem key={post.id} post={post} />
+              ))}
+            </div>
+          </section>
         </div>
       </section>
-
-      {!!highlighted.length && (
-        <section className="container section-gap">
-          <div className="section-title-row">
-            <h2>More from Archive</h2>
-          </div>
-          <div className="overview-archive-grid">
-            {highlighted.map((post) => (
-              <PostListItem key={post.id} post={post} />
-            ))}
-          </div>
-        </section>
-      )}
     </main>
   );
 }

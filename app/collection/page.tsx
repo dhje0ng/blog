@@ -1,21 +1,14 @@
 import { Header } from "@/components/Header";
 import { CategoryCard } from "@/components/post/CategoryCard";
-import { getPosts } from "@/lib/notion";
+import { getCategorySlug, getPosts } from "@/lib/notion";
 
-function slugifyCategory(name: string): string {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
+export const dynamic = "force-dynamic";
 
 export default async function CollectionPage() {
   const posts = await getPosts();
 
   const grouped = posts.reduce<Record<string, typeof posts>>((acc, post) => {
-    const key = post.category ?? "Uncategorized";
+    const key = post.category;
     if (!acc[key]) acc[key] = [];
     acc[key].push(post);
     return acc;
@@ -24,7 +17,7 @@ export default async function CollectionPage() {
   const categories = Object.entries(grouped)
     .map(([name, categoryPosts]) => ({
       name,
-      slug: slugifyCategory(name),
+      slug: getCategorySlug(name),
       count: categoryPosts.length,
       description: `${name} 주제의 아티클 ${categoryPosts.length}개`,
       posts: categoryPosts

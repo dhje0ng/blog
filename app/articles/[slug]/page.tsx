@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
-import { getPostBySlug, getPosts } from "@/lib/notion";
+import { getPostBySlug } from "@/lib/notion";
+
+export const dynamic = "force-dynamic";
 
 type PostPageProps = {
   params: {
     slug: string;
   };
 };
-
-export async function generateStaticParams() {
-  const posts = await getPosts();
-  return posts.map((post) => ({ slug: post.slug }));
-}
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const post = await getPostBySlug(params.slug);
