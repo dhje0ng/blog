@@ -1,16 +1,15 @@
 "use client";
 
-import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-const navItems: ReadonlyArray<{ label: string; href: Route }> = [
+const navItems = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/posts" },
   { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
-];
+] as const;
 
 export function Header() {
   const pathname = usePathname();
@@ -46,7 +45,7 @@ export function Header() {
                 : pathname.startsWith(item.href);
 
             return (
-              <Link
+              <a
                 key={item.href}
                 className={`gh-nav-link ${isActive ? "is-active" : ""}`}
                 href={item.href}
@@ -54,7 +53,7 @@ export function Header() {
                 aria-current={isActive ? "page" : undefined}
               >
                 {item.label}
-              </Link>
+              </a>
             );
           })}
         </nav>
