@@ -6,6 +6,9 @@ export type PostSummary = {
   tags: string[];
   updatedAt: string;
   readingMinutes: number;
+  coverImage?: string;
+  category?: string;
+  author?: string;
 };
 
 export type FeaturedPost = PostSummary;
