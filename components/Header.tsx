@@ -1,14 +1,8 @@
 "use client";
 
-import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const navItems: Array<{ label: string; href: Route }> = [
-  { label: "Overview", href: "/overview" },
-  { label: "Collection", href: "/collection" },
-  { label: "Articles", href: "/articles" }
-];
+import { NAV_ROUTES } from "@/lib/routes";
 
 export function Header() {
   const pathname = usePathname();
@@ -20,7 +14,7 @@ export function Header() {
           N-Blog
         </Link>
         <nav className="gh-nav" aria-label="Main navigation">
-          {navItems.map((item) => {
+          {NAV_ROUTES.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link key={item.label} className={`gh-nav-link ${isActive ? "active" : ""}`} href={item.href}>
