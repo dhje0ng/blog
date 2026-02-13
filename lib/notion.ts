@@ -1,18 +1,10 @@
+import { NotionAPI } from "notion-client";
 import { CategorySummary, PostSummary } from "./types";
 
 const notionDatabaseId = process.env.NOTION_DATABASE_ID;
-const NOTION_TIMEOUT_MS = 5000;
-const NOTION_VERSION = "2022-06-28";
+const notion = new NotionAPI();
 
-type NotionQueryResponse = {
-  results?: Array<{
-    id: string;
-    cover?: unknown;
-    properties?: Record<string, unknown>;
-  }>;
-};
-
-function normalizeDatabaseId(raw: string): string {
+function normalizePageId(raw: string): string {
   const trimmed = raw.trim();
   const idFromUrl = trimmed.match(/[a-f0-9]{32}/i)?.[0];
   const compact = (idFromUrl ?? trimmed).replace(/-/g, "");
@@ -21,42 +13,7 @@ function normalizeDatabaseId(raw: string): string {
     throw new Error("NOTION_DATABASE_ID_INVALID_FORMAT");
   }
 
-  return `${compact.slice(0, 8)}-${compact.slice(8, 12)}-${compact.slice(12, 16)}-${compact.slice(16, 20)}-${compact.slice(20)}`;
-}
-
-function extractText(value: unknown): string {
-  if (!value || typeof value !== "object") return "";
-  const typed = value as {
-    title?: Array<{ plain_text?: string }>;
-    rich_text?: Array<{ plain_text?: string }>;
-  };
-  const target = typed.title ?? typed.rich_text;
-  return target?.map((item) => item.plain_text ?? "").join("") ?? "";
-}
-
-function extractCategory(value: unknown): string {
-  if (!value || typeof value !== "object") return "Uncategorized";
-  const typed = value as { select?: { name?: string } | null };
-  return typed.select?.name ?? "Uncategorized";
-}
-
-
-function extractTags(value: unknown): string[] {
-  if (!value || typeof value !== "object") return [];
-  if (!("multi_select" in value)) return [];
-  const typed = value as { multi_select?: Array<{ name?: string }> };
-  return (typed.multi_select ?? []).map((tag) => tag.name ?? "").filter(Boolean);
-}
-
-function extractCover(source: unknown): string | undefined {
-  if (!source || typeof source !== "object") return undefined;
-  const cover = (source as { cover?: unknown }).cover as
-    | { type?: "external" | "file"; external?: { url?: string }; file?: { url?: string } }
-    | undefined;
-  if (!cover) return undefined;
-  if (cover.type === "external") return cover.external?.url;
-  if (cover.type === "file") return cover.file?.url;
-  return undefined;
+  return compact;
 }
 
 function slugifyCategory(name: string): string {
@@ -68,79 +25,149 @@ function slugifyCategory(name: string): string {
     .replace(/-+/g, "-");
 }
 
-function withTimeout<T>(promise: Promise<T>): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("NOTION_TIMEOUT")), NOTION_TIMEOUT_MS);
+function toPlainText(value: unknown): string {
+  if (!Array.isArray(value)) return "";
+
+  return value
+    .map((entry) => {
+      if (!Array.isArray(entry) || entry.length === 0) return "";
+      const text = entry[0];
+      return typeof text === "string" ? text : "";
     })
-  ]);
+    .join(" ")
+    .trim();
 }
 
-function parseUpdated(properties: Record<string, unknown> | undefined): string {
-  const updatedProp = properties?.Updated;
-  if (updatedProp && typeof updatedProp === "object" && "date" in updatedProp) {
-    const date = (updatedProp as { date: { start?: string } | null }).date?.start;
-    if (date) return date;
+function extractPropertyText(pageValue: Record<string, unknown>, propertyId: string | undefined): string {
+  if (!propertyId) return "";
+  const props = pageValue.properties as Record<string, unknown> | undefined;
+  if (!props) return "";
+  return toPlainText(props[propertyId]);
+}
+
+function extractTags(raw: string): string[] {
+  if (!raw) return [];
+  return raw
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function resolveSchemaPropertyId(
+  schema: Record<string, { name?: string; type?: string }> | undefined,
+  candidates: string[]
+): string | undefined {
+  if (!schema) return undefined;
+
+  const lowered = candidates.map((candidate) => candidate.toLowerCase());
+
+  for (const [key, value] of Object.entries(schema)) {
+    const name = (value.name ?? "").toLowerCase();
+    if (lowered.includes(name)) return key;
   }
-  return new Date().toISOString().split("T")[0];
+
+  return undefined;
 }
 
-async function queryPublicDatabase(databaseId: string): Promise<NotionQueryResponse> {
-  const response = await withTimeout(
-    fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Notion-Version": NOTION_VERSION
-      },
-      body: JSON.stringify({ page_size: 100 }),
-      cache: "no-store"
-    })
-  );
-
-  if (!response.ok) {
-    throw new Error("NOTION_FETCH_FAILED");
-  }
-
-  return (await response.json()) as NotionQueryResponse;
+function readBlockTitle(block: Record<string, unknown> | undefined): string {
+  if (!block) return "";
+  const props = block.properties as Record<string, unknown> | undefined;
+  return toPlainText(props?.title);
 }
 
-export async function getPosts(): Promise<PostSummary[]> {
+function extractContentFromChildren(
+  rowValue: Record<string, unknown>,
+  blockMap: Record<string, { value?: Record<string, unknown> }>
+): string {
+  const childIds = Array.isArray(rowValue.content) ? (rowValue.content as string[]) : [];
+
+  const lines = childIds
+    .map((id) => readBlockTitle(blockMap[id]?.value))
+    .filter(Boolean);
+
+  return lines.join("\n\n");
+}
+
+async function getDatabaseRecordMap() {
   if (!notionDatabaseId) {
     throw new Error("NOTION_CONFIG_MISSING");
   }
 
-  const databaseId = normalizeDatabaseId(notionDatabaseId);
-  const payload = await queryPublicDatabase(databaseId);
+  const pageId = normalizePageId(notionDatabaseId);
+  return notion.getPage(pageId);
+}
 
-  const posts = (payload.results ?? []).reduce<PostSummary[]>((acc, result) => {
-    const props = result.properties;
-    if (!props) return acc;
+export async function getPosts(): Promise<PostSummary[]> {
+  const recordMap = await getDatabaseRecordMap();
 
-    const title = extractText(props.Title);
-    const slug = extractText(props.Slug) || result.id;
-    const summary = extractText(props.Summary);
-    const category = extractCategory(props.Category);
-    const content = extractText(props.Content) || summary;
+  const blockMap = (recordMap.block ?? {}) as Record<string, { value?: Record<string, unknown> }>;
+  const collectionMap = (recordMap.collection ?? {}) as Record<string, { value?: Record<string, unknown> }>;
 
-    const tags = extractTags(props.Tags);
+  const databasePage = Object.values(blockMap).find((entry) => {
+    const value = entry.value;
+    return value?.type === "collection_view_page" || value?.type === "collection_view";
+  })?.value;
 
-    acc.push({
-      id: result.id,
-      title: title || "Untitled",
-      slug,
-      summary,
-      category,
-      tags,
-      updatedAt: parseUpdated(props),
-      readingMinutes: Math.max(3, Math.ceil(content.length / 220)),
-      coverImage: extractCover(result),
-      content
-    });
+  if (!databasePage) {
+    throw new Error("NOTION_DATABASE_PAGE_NOT_FOUND");
+  }
 
-    return acc;
-  }, []);
+  const collectionId = databasePage.collection_id as string | undefined;
+  if (!collectionId) {
+    throw new Error("NOTION_COLLECTION_ID_NOT_FOUND");
+  }
+
+  const collection = collectionMap[collectionId]?.value;
+  const schema = (collection?.schema ?? {}) as Record<string, { name?: string; type?: string }>;
+
+  const titleId = resolveSchemaPropertyId(schema, ["title", "name"]);
+  const slugId = resolveSchemaPropertyId(schema, ["slug", "url"]);
+  const summaryId = resolveSchemaPropertyId(schema, ["summary", "description", "excerpt"]);
+  const categoryId = resolveSchemaPropertyId(schema, ["category"]);
+  const tagsId = resolveSchemaPropertyId(schema, ["tags", "tag"]);
+  const updatedId = resolveSchemaPropertyId(schema, ["updated", "date", "published", "publish date"]);
+  const contentId = resolveSchemaPropertyId(schema, ["content", "body"]);
+
+  const rows = Object.values(blockMap)
+    .map((entry) => entry.value)
+    .filter((value): value is Record<string, unknown> => Boolean(value))
+    .filter((value) => value.type === "page" && value.parent_id === collectionId);
+
+  const posts = rows
+    .map((rowValue) => {
+      const id = (rowValue.id as string | undefined) ?? "";
+      const title = extractPropertyText(rowValue, titleId) || "Untitled";
+      const slug = extractPropertyText(rowValue, slugId) || id;
+      const summary = extractPropertyText(rowValue, summaryId);
+      const category = extractPropertyText(rowValue, categoryId) || "Uncategorized";
+      const tags = extractTags(extractPropertyText(rowValue, tagsId));
+      const updatedAt = extractPropertyText(rowValue, updatedId) || new Date().toISOString().split("T")[0];
+      const blockContent = extractContentFromChildren(rowValue, blockMap);
+      const propertyContent = extractPropertyText(rowValue, contentId);
+      const content = propertyContent || blockContent || summary;
+
+      const format = (rowValue.format ?? {}) as Record<string, unknown>;
+      const coverImage =
+        typeof format.page_cover === "string"
+          ? (format.page_cover as string)
+          : typeof format.display_source === "string"
+            ? (format.display_source as string)
+            : undefined;
+
+      return {
+        id,
+        title,
+        slug,
+        summary,
+        category,
+        tags,
+        updatedAt,
+        readingMinutes: Math.max(3, Math.ceil(content.length / 220)),
+        coverImage,
+        content
+      } satisfies PostSummary;
+    })
+    .filter((post) => Boolean(post.id));
 
   return posts.sort((a, b) => +new Date(b.updatedAt) - +new Date(a.updatedAt));
 }
