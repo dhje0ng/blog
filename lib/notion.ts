@@ -3,7 +3,6 @@ import { CategorySummary, PostSummary } from "./types";
 
 const notionToken = process.env.NOTION_API_KEY;
 const notionDatabaseId = process.env.NOTION_DATABASE_ID;
-
 const notion = notionToken ? new Client({ auth: notionToken }) : null;
 
 const FALLBACK_POSTS: PostSummary[] = [
@@ -16,8 +15,7 @@ const FALLBACK_POSTS: PostSummary[] = [
     category: "Engineering",
     updatedAt: "2026-02-13",
     readingMinutes: 8,
-    coverImage:
-      "https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1200&q=80"
+    coverImage: "https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "seed-2",
@@ -28,8 +26,7 @@ const FALLBACK_POSTS: PostSummary[] = [
     category: "Design",
     updatedAt: "2026-02-12",
     readingMinutes: 6,
-    coverImage:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80"
+    coverImage: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "seed-3",
@@ -40,8 +37,7 @@ const FALLBACK_POSTS: PostSummary[] = [
     category: "Frontend",
     updatedAt: "2026-02-11",
     readingMinutes: 5,
-    coverImage:
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80"
+    coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80"
   },
   {
     id: "seed-4",
@@ -62,7 +58,7 @@ function extractText(value: unknown): string {
     rich_text?: Array<{ plain_text?: string }>;
   };
   const target = typed.title ?? typed.rich_text;
-  return target?.map((v) => v.plain_text ?? "").join("") ?? "";
+  return target?.map((item) => item.plain_text ?? "").join("") ?? "";
 }
 
 function extractCategory(value: unknown): string {
@@ -84,12 +80,13 @@ export async function getPosts(): Promise<PostSummary[]> {
 
     return response.results
       .map((result) => {
-        if (!('properties' in result)) return null;
+        if (!("properties" in result)) return null;
 
         const title = extractText(result.properties.Title);
         const slug = extractText(result.properties.Slug) || result.id;
         const summary = extractText(result.properties.Summary);
         const category = extractCategory(result.properties.Category);
+
         const tags =
           "multi_select" in (result.properties.Tags ?? {})
             ? (result.properties.Tags as { multi_select: Array<{ name: string }> }).multi_select.map((tag) => tag.name)
