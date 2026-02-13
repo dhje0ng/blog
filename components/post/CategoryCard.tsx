@@ -1,11 +1,29 @@
-import { CategorySummary } from "@/lib/types";
+import type { Route } from "next";
+import Link from "next/link";
+import { CategorySummary, PostSummary } from "@/lib/types";
 
-export function CategoryCard({ category }: { category: CategorySummary }) {
+type CategoryCardProps = {
+  category: CategorySummary;
+  posts: PostSummary[];
+};
+
+export function CategoryCard({ category, posts }: CategoryCardProps) {
   return (
     <article className="category-card">
-      <h3>{category.name}</h3>
+      <Link href={`/collection/${category.slug}` as Route} className="category-card-title">
+        <h3>{category.name}</h3>
+      </Link>
       <p>{category.description}</p>
-      <span>{category.count} Articles</span>
+      <ul className="category-preview-list" aria-label={`${category.name} preview posts`}>
+        {posts.slice(0, 3).map((post) => (
+          <li key={post.id}>
+            <Link href={`/articles/${post.slug}` as Route}>{post.title}</Link>
+          </li>
+        ))}
+      </ul>
+      <Link className="category-more-link" href={`/collection/${category.slug}` as Route}>
+        {category.count} Articles 보기
+      </Link>
     </article>
   );
 }

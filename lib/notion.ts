@@ -87,6 +87,16 @@ function extractCover(source: unknown): string | undefined {
   return undefined;
 }
 
+
+function slugifyCategory(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 function withTimeout<T>(promise: Promise<T>): Promise<T> {
   return Promise.race([
     promise,
@@ -164,6 +174,7 @@ export async function getCategorySummaries(): Promise<CategorySummary[]> {
     .map(([name, count]) => ({
       name,
       count,
+      slug: slugifyCategory(name),
       description: `${name} 주제의 아티클 ${count}개`
     }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));

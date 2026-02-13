@@ -13,6 +13,7 @@ export type PostSummary = {
 
 export type CategorySummary = {
   name: string;
+  slug: string;
   count: number;
   description: string;
 };

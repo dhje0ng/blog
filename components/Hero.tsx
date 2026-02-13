@@ -1,16 +1,16 @@
 export function Hero() {
   return (
     <section className="hero container">
-      <p className="eyebrow">Editorial Prototype</p>
-      <h1>기록이 곧 컬렉션이 되는 블로그</h1>
+      <p className="eyebrow">Overview</p>
+      <h1>기술과 기록, 일상적인 발견을 차분하게 정리하는 공간</h1>
       <p className="hero-copy">
-        Overview에서 흐름을 읽고, Collection에서 주제를 탐색하고, Articles에서 모든 글을 만나는
-        구조로 설계했습니다. 화이트톤과 여백 중심의 레이아웃으로 읽기 경험을 강화합니다.
+        긴 문장을 읽기 편한 여백과 타이포로 구성하고, 핵심 글은 상단에 큐레이션했습니다.
+        아래에서 최신 글과 카테고리별 아카이브를 이어서 탐색할 수 있습니다.
       </p>
       <div className="hero-meta">
-        <span className="meta-pill">Overview</span>
-        <span className="meta-pill">Collection</span>
-        <span className="meta-pill">Articles</span>
+        <span className="meta-pill">Editor&apos;s Pick</span>
+        <span className="meta-pill">Quick Reads</span>
+        <span className="meta-pill">Archive</span>
       </div>
     </section>
   );
