@@ -2,7 +2,7 @@ import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { CategoryCard } from "@/components/post/CategoryCard";
 import { FeaturedPostCard } from "@/components/post/FeaturedPostCard";
-import { PostListItem } from "@/components/post/PostListItem";
+import { PostCard } from "@/components/PostCard";
 import { CategorySummary, FeaturedPost, PostListItem as PostListItemType } from "@/lib/types";
 import { getPosts } from "@/lib/notion";
 
@@ -58,7 +58,7 @@ export default async function HomePage() {
         </div>
         <div className="post-list-grid">
           {postList.map((post) => (
-            <PostListItem key={post.id} post={post} />
+            <PostCard key={post.id} post={post} />
           ))}
         </div>
       </section>
