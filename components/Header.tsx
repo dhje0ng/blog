@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import styles from "./Header.module.css";
 
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/posts" },
   { label: "Projects", href: "/projects" },
-  { label: "About", href: "/about" },
+  { label: "About", href: "/about" }
 ] as const;
 
 export function Header() {
@@ -16,38 +17,35 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="gh-header">
-      <div className="container gh-header-inner">
-        <Link className="brand" href="/" aria-label="Go to homepage">
+    <header className={styles.header}>
+      <div className={`container ${styles.header__inner}`}>
+        <Link className={styles.header__brand} href="/" aria-label="Go to homepage">
           N-Blog
         </Link>
 
         <button
           type="button"
-          className="gh-menu-toggle"
+          className={styles.header__menuButton}
           aria-expanded={isMenuOpen}
           aria-controls="main-navigation"
           onClick={() => setIsMenuOpen((prev) => !prev)}
         >
           <span aria-hidden="true">☰</span>
-          <span className="sr-only">Toggle menu</span>
+          <span className={styles.header__srOnly}>Toggle menu</span>
         </button>
 
         <nav
           id="main-navigation"
-          className={`gh-nav ${isMenuOpen ? "is-open" : ""}`}
+          className={`${styles.header__nav} ${isMenuOpen ? styles.header__navOpen : ""}`}
           aria-label="Main navigation"
         >
           {navItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+            const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
             return (
               <a
                 key={item.href}
-                className={`gh-nav-link ${isActive ? "is-active" : ""}`}
+                className={`${styles.header__link} ${isActive ? styles.header__linkActive : ""}`}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
                 aria-current={isActive ? "page" : undefined}
@@ -58,18 +56,18 @@ export function Header() {
           })}
         </nav>
 
-        <div className="gh-header-utils">
-          <button type="button" className="gh-util-button" aria-label="Search">
+        <div className={styles.header__utils}>
+          <button type="button" className={styles.header__utilButton} aria-label="Search">
             🔍
           </button>
-          <button type="button" className="gh-util-button" aria-label="Toggle theme">
+          <button type="button" className={styles.header__utilButton} aria-label="Toggle theme">
             🌓
           </button>
         </div>
       </div>
 
       <div
-        className={`gh-nav-dim ${isMenuOpen ? "is-open" : ""}`}
+        className={`${styles.header__dim} ${isMenuOpen ? styles.header__dimOpen : ""}`}
         aria-hidden="true"
         onClick={() => setIsMenuOpen(false)}
       />
