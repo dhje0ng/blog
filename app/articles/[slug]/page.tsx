@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
-import { getPostBySlug } from "@/lib/notion";
+import { Header } from "@/components/layout/Header";
+import { getPostBySlugOrNull } from "@/lib/notion/safe";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,7 @@ type PostPageProps = {
 };
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug);
+  const post = await getPostBySlugOrNull(params.slug);
 
   if (!post) {
     return { title: "Post not found" };
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 }
 
 export default async function ArticleDetailPage({ params }: PostPageProps) {
-  const post = await getPostBySlug(params.slug);
+  const post = await getPostBySlugOrNull(params.slug);
 
   if (!post) {
     notFound();

@@ -1,11 +1,17 @@
-import { Header } from "@/components/Header";
+import { notFound } from "next/navigation";
+import { Header } from "@/components/layout/Header";
 import { CategoryCard } from "@/components/post/CategoryCard";
-import { getCategorySlug, getPosts } from "@/lib/notion";
+import { getCategorySlug } from "@/lib/notion/posts";
+import { getPostsOrNull } from "@/lib/notion/safe";
 
 export const dynamic = "force-dynamic";
 
 export default async function CollectionPage() {
-  const posts = await getPosts();
+  const posts = await getPostsOrNull();
+
+  if (!posts) {
+    notFound();
+  }
 
   const grouped = posts.reduce<Record<string, typeof posts>>((acc, post) => {
     const key = post.category;

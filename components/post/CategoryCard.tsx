@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { CategorySummary, PostSummary } from "@/lib/types";
+import { CategorySummary, PostSummary } from "@/lib/models/post";
 
 type CategoryCardProps = {
   category: CategorySummary;

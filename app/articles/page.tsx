@@ -1,6 +1,7 @@
-import { Header } from "@/components/Header";
+import { notFound } from "next/navigation";
+import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
-import { getPosts } from "@/lib/notion";
+import { getPostsOrNull } from "@/lib/notion/safe";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,12 @@ function includesQuery(text: string, query: string): boolean {
 }
 
 export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
-  const posts = await getPosts();
+  const posts = await getPostsOrNull();
+
+  if (!posts) {
+    notFound();
+  }
+
   const query = searchParams.q?.trim() ?? "";
 
   const filteredPosts = query

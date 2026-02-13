@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { PostSummary } from "@/lib/types";
+import { PostSummary } from "@/lib/models/post";
 
 export function PostListItem({ post }: { post: PostSummary }) {
   return (

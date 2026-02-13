@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
-import { getCategorySlug, getPosts } from "@/lib/notion";
+import { getCategorySlug } from "@/lib/notion/posts";
+import { getPostsOrNull } from "@/lib/notion/safe";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,12 @@ type CategoryPageProps = {
 };
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const posts = await getPosts();
+  const posts = await getPostsOrNull();
+
+  if (!posts) {
+    return { title: "Not found" };
+  }
+
   const categoryName = posts.find((post) => getCategorySlug(post.category) === params.slug)?.category;
 
   if (!categoryName) {
@@ -28,7 +34,12 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 }
 
 export default async function CategoryDetailPage({ params }: CategoryPageProps) {
-  const posts = await getPosts();
+  const posts = await getPostsOrNull();
+
+  if (!posts) {
+    notFound();
+  }
+
   const filteredPosts = posts.filter((post) => getCategorySlug(post.category) === params.slug);
 
   if (!filteredPosts.length) {
