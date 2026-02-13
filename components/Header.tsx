@@ -1,10 +1,11 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-const navItems = [
+const navItems: ReadonlyArray<{ label: string; href: Route }> = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/posts" },
   { label: "Projects", href: "/projects" },
