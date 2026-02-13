@@ -1,8 +1,20 @@
 import { NotionAPI } from "notion-client";
-import { CategorySummary, PostSummary } from "./types";
+import { CategorySummary, PostSummary } from "@/lib/models/post";
 
 const notionDatabaseId = process.env.NOTION_DATABASE_ID;
 const notion = new NotionAPI();
+
+const NOTION_DATA_UNAVAILABLE_ERRORS = new Set([
+  "NOTION_CONFIG_MISSING",
+  "NOTION_DATABASE_ID_INVALID_FORMAT",
+  "NOTION_FETCH_FAILED",
+  "NOTION_DATABASE_PAGE_NOT_FOUND",
+  "NOTION_COLLECTION_ID_NOT_FOUND"
+]);
+
+export function isNotionDatabaseUnavailableError(error: unknown): boolean {
+  return error instanceof Error && NOTION_DATA_UNAVAILABLE_ERRORS.has(error.message);
+}
 
 function normalizePageId(raw: string): string {
   const trimmed = raw.trim();

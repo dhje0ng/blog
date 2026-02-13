@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ROUTES } from "@/lib/routes";
+import { NAV_ROUTES } from "@/lib/constants/routes";
 
 export function Header() {
   const pathname = usePathname();

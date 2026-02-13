@@ -1,9 +1,10 @@
 import Image from "next/image";
 import type { Route } from "next";
 import Link from "next/link";
-import { Header } from "@/components/Header";
+import { notFound } from "next/navigation";
+import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
-import { getPosts } from "@/lib/notion";
+import { getPostsOrNull } from "@/lib/notion/safe";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,12 @@ const PROFILE = {
 };
 
 export default async function OverviewPage() {
-  const posts = await getPosts();
+  const posts = await getPostsOrNull();
+
+  if (!posts) {
+    notFound();
+  }
+
   const popular = posts.slice(0, 3);
   const recent = posts.slice(3);
 

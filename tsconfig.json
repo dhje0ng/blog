@@ -27,7 +27,7 @@
         "./*"
       ],
       "notion-client": [
-        "./lib/notion-client"
+        "./lib/notion/client"
       ]
     }
   },
