@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Prototype Preview</title>
+<style>
+:root{--bg:#fff;--surface:#f6f8fa;--border:#d0d7de;--text:#1f2328;--muted:#59636e;--accent:#0969da;--radius:12px}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.container{width:min(1120px,92vw);margin:0 auto}.gh-header{border-bottom:1px solid var(--border);background:#fff}.gh-header-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}.gh-nav{display:flex;gap:16px;color:var(--muted);font-size:14px}.hero{padding:56px 0 28px}.eyebrow{color:var(--accent);font-size:13px;font-weight:600}.hero h1{margin:8px 0;font-size:clamp(1.8rem,2.8vw,2.6rem)}.hero-copy{max-width:740px;color:var(--muted);line-height:1.7}.hero-meta{display:flex;gap:10px;flex-wrap:wrap}.meta-pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px}.post-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding-bottom:60px}.post-card{border:1px solid var(--border);border-radius:var(--radius);padding:16px}.post-card p{color:var(--muted);font-size:14px;line-height:1.6}.tag{font-size:12px;border:1px solid var(--border);background:var(--surface);padding:4px 8px;border-radius:999px;margin-right:6px}
+@media(max-width:900px){.post-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.post-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="gh-header"><div class="container gh-header-inner"><strong>N-Blog</strong><nav class="gh-nav"><span>Home</span><span>Posts</span><span>Projects</span><span>About</span></nav></div></header>
+<section class="hero container"><p class="eyebrow">Prototype v0.1</p><h1>Next.js + Notion 기반의 GitHub 스타일 블로그</h1><p class="hero-copy">화이트톤 중심의 미니멀 디자인과 반응형 레이아웃을 적용한 1차 프로토타입입니다.</p><div class="hero-meta"><span class="meta-pill">Responsive</span><span class="meta-pill">GitHub-inspired</span><span class="meta-pill">Notion Sync Ready</span></div></section>
+<section class="container"><div class="post-grid"><article class="post-card"><h3>아키텍처 설계</h3><p>데이터 흐름과 렌더링 전략을 정리한 글.</p><span class="tag">Next.js</span><span class="tag">Notion</span></article><article class="post-card"><h3>UI 토큰 정의</h3><p>GitHub 스타일 톤앤매너를 반영한 UI 규칙.</p><span class="tag">Design</span></article><article class="post-card"><h3>반응형 설계</h3><p>모바일부터 데스크톱까지 자연스럽게 확장되는 레이아웃.</p><span class="tag">Responsive</span></article></div></section>
+</body></html>
