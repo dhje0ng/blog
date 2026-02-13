@@ -1,14 +1,18 @@
 "use client";
 
+import Image from "next/image";
+
+const CAT_GIF_URL = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2s1OW05c2s2M2FveDk0M3R5enFlMzRiMjByMmFlbTZ5djFmbWRxYiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ICOgUNjpvO0PC/giphy.gif";
+
 export default function GlobalError({ reset }: { error: Error; reset: () => void }) {
   return (
     <html lang="ko">
       <body>
         <main className="error-page">
+          <Image className="error-cat-gif" src={CAT_GIF_URL} alt="cat gif" width={360} height={240} unoptimized />
           <h1>Internal Server Error</h1>
-          <p>노션 API에서 게시글을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</p>
           <button type="button" onClick={() => reset()}>
-            다시 시도
+            Retry
           </button>
         </main>
       </body>

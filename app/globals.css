@@ -681,20 +681,26 @@ a {
 
 .error-page {
   width: min(520px, 92vw);
-  margin: 120px auto;
+  margin: 100px auto;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   background: #fff;
   padding: 24px;
   text-align: center;
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+
+.error-cat-gif {
+  width: min(360px, 100%);
+  border-radius: 14px;
+  border: 1px solid var(--line-subtle);
 }
 
 .error-page h1 {
-  margin-top: 0;
-}
-
-.error-page p {
-  color: var(--muted);
+  margin: 0;
+  font-size: 1.8rem;
 }
 
 .error-page button {
