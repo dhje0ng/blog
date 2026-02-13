@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 const PROFILE = {
   name: "Donghyeon Jeong",
   handle: "@dhjeong",
-  intro: "test",
+  intro: "개발과 디자인, 생산성을 기록합니다.",
   avatar: "https://avatars.githubusercontent.com/u/9919?v=4"
 };
 
@@ -42,8 +42,11 @@ export default async function OverviewPage() {
           </article>
 
           <article className="overview-intro-card">
-            <h2>Welcome 👋</h2>
-            <p>노션 데이터베이스와 연동된 블로그입니다. 기술, 디자인, 생산성에 관한 글을 정리합니다.</p>
+            <h2>Overview</h2>
+            <nav className="overview-quick-nav" aria-label="overview quick links">
+              <Link href="/articles">Articles</Link>
+              <Link href="/collection">Collection</Link>
+            </nav>
           </article>
         </aside>
 
@@ -58,7 +61,7 @@ export default async function OverviewPage() {
             <div className="popular-grid">
               {popular.map((post, index) => (
                 <Link key={post.id} href={`/articles/${post.slug}` as Route} className="popular-card">
-                  <span className="popular-rank">TOP {index + 1}</span>
+                  <span className="popular-rank">#{index + 1}</span>
                   <h3>{post.title}</h3>
                   <p>{post.summary}</p>
                 </Link>
