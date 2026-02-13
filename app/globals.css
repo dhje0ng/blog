@@ -103,7 +103,7 @@ a {
 }
 
 .section-gap {
-  padding: 12px 0 64px;
+  padding: 12px 0 40px;
 }
 
 .section-title-row {
@@ -126,30 +126,65 @@ a {
   color: var(--text);
 }
 
-.post-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+.featured-post-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  background: linear-gradient(180deg, #fff, #f8fbff);
 }
 
-.post-card {
+.featured-label {
+  margin: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.featured-post-card h2 {
+  margin: 8px 0 12px;
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+}
+
+.featured-post-card p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.post-list-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.post-list-item {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 16px;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.post-card h2 {
-  margin: 10px 0;
-  font-size: 1.1rem;
-  line-height: 1.4;
+.post-list-item h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
 }
 
-.post-card p {
+.post-list-item p {
   margin: 0;
   color: var(--muted);
   line-height: 1.6;
   font-size: 14px;
+}
+
+.post-list-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .post-meta-row {
@@ -163,7 +198,6 @@ a {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 12px;
 }
 
 .tag {
@@ -174,8 +208,40 @@ a {
   background: var(--surface);
 }
 
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.category-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: #fff;
+}
+
+.category-name {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.category-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.category-card p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 @media (max-width: 900px) {
-  .post-grid {
+  .category-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -189,7 +255,11 @@ a {
     gap: 10px;
   }
 
-  .post-grid {
+  .post-list-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-grid {
     grid-template-columns: 1fr;
   }
 
