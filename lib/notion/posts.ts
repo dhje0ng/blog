@@ -188,7 +188,11 @@ function blockToMarkdownLines(block: BlockObjectResponse, depth = 0): string[] {
   if (block.type === "numbered_list_item") return [`${indent}1. ${richTextToMarkdown(block.numbered_list_item.rich_text)}`];
   if (block.type === "quote") return [`> ${richTextToMarkdown(block.quote.rich_text)}`];
   if (block.type === "callout") return [`> ${richTextToMarkdown(block.callout.rich_text)}`];
-  if (block.type === "code") return ["```", block.code.rich_text.map((text) => text.plain_text).join(""), "```"];
+  if (block.type === "code") {
+    const language = block.code.language?.trim();
+    const fence = language ? `\`\`\`${language}` : "```";
+    return [fence, block.code.rich_text.map((text) => text.plain_text).join(""), "```"];
+  }
   if (block.type === "to_do") {
     const prefix = block.to_do.checked ? "[x]" : "[ ]";
     return [`${indent}- ${prefix} ${richTextToMarkdown(block.to_do.rich_text)}`];
