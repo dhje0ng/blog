@@ -5,18 +5,14 @@ import { useEffect, useState } from "react";
 
 type ThemeMode = "light" | "dark";
 
-const MAP_IMAGE_BY_THEME: Record<ThemeMode, { src: string; alt: string; width: number; height: number }> = {
+const MAP_IMAGE_BY_THEME: Record<ThemeMode, { src: string; alt: string }> = {
   light: {
     src: "/map_light.png",
-    alt: "Seoul map (light theme)",
-    width: 509,
-    height: 308
+    alt: "Seoul map (light theme)"
   },
   dark: {
     src: "/map_dark.png",
-    alt: "Seoul map (dark theme)",
-    width: 504,
-    height: 242
+    alt: "Seoul map (dark theme)"
   }
 };
 
@@ -49,19 +45,14 @@ export function OverviewMap() {
   const selectedMap = MAP_IMAGE_BY_THEME[theme];
 
   return (
-    <div
-      className="overview-map-frame-shell"
-      style={{
-        maxWidth: `${selectedMap.width}px`
-      }}
-    >
+    <div className="overview-map-frame-shell">
       <Image
+        key={theme}
         src={selectedMap.src}
         alt={selectedMap.alt}
         className="overview-map-frame"
-        width={selectedMap.width}
-        height={selectedMap.height}
-        sizes={`(max-width: 1040px) calc(100vw - 92px), ${selectedMap.width}px`}
+        fill
+        sizes="(max-width: 1040px) calc(100vw - 92px), 509px"
       />
     </div>
   );
