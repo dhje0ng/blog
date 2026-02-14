@@ -168,13 +168,18 @@ export default async function OverviewPage() {
 
           <div className="overview-content-column">
             <article className="overview-readme" aria-label="profile introduction">
-              <div className="overview-map-wrap">
-                <iframe
-                  title="Seoul location map"
-                  src="https://www.google.com/maps?q=Seoul&output=embed"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+              <div className="overview-map-banner">
+                <p>Located in Seoul, South Korea</p>
+                <div className="overview-map-wrap">
+                  <Image
+                    src="https://maps.googleapis.com/maps/api/staticmap?center=Seoul,South+Korea&zoom=11&size=1200x600&scale=2&maptype=roadmap&markers=color:red%7CSeoul,South+Korea"
+                    alt="Static Google map focused on Seoul"
+                    width={1200}
+                    height={600}
+                    unoptimized
+                    className="overview-map-static-image"
+                  />
+                </div>
               </div>
               <div className="overview-readme-divider" aria-hidden="true" />
               <h2>Hi there, I&apos;m {siteConfig.profile.name} 👋</h2>
