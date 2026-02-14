@@ -6,10 +6,10 @@ import { getPostsOrNull } from "@/lib/notion/safe";
 export const dynamic = "force-dynamic";
 
 type ArticlesPageProps = {
-  searchParams: {
+  searchParams: Promise<{
     q?: string;
     section?: "popular" | "recent";
-  };
+  }>;
 };
 
 function includesQuery(text: string, query: string): boolean {
@@ -21,14 +21,14 @@ function isPinnedPost(tags: string[]): boolean {
 }
 
 export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
+  const { q, section } = await searchParams;
   const posts = await getPostsOrNull();
 
   if (!posts) {
     notFound();
   }
 
-  const query = searchParams.q?.trim() ?? "";
-  const section = searchParams.section;
+  const query = q?.trim() ?? "";
 
   const sectionFilteredPosts =
     section === "popular"
