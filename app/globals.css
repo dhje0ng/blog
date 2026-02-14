@@ -1046,13 +1046,15 @@ a {
 
 .overview-section .post-list-item h3 {
   margin: 8px 0 6px;
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   line-height: 1.35;
 }
 
 .overview-section .post-list-item p {
-  font-size: 13px;
-  line-height: 1.55;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .overview-section .post-meta-row {

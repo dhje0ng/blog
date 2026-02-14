@@ -91,6 +91,13 @@ function readTextProperty(page: PageObjectResponse, names: string[]): string {
   if (property.type === "phone_number") return property.phone_number ?? "";
   if (property.type === "select") return property.select?.name ?? "";
   if (property.type === "status") return property.status?.name ?? "";
+  if (property.type === "people") {
+    return property.people
+      .map((person) => person.name?.trim())
+      .filter((name): name is string => Boolean(name))
+      .join(", ");
+  }
+  if (property.type === "created_by") return property.created_by.name?.trim() ?? "";
 
   return "";
 }
