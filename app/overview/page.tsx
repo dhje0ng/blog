@@ -5,9 +5,15 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { getPostsOrNull } from "@/lib/notion/safe";
+import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
 
 export const dynamic = "force-dynamic";
+
+type ActivityCell = {
+  dateKey: string;
+  count: number;
+};
 
 function SocialLogo({ name }: { name: string }) {
   if (name === "github") {
@@ -51,6 +57,62 @@ function isPinnedPost(tags: string[]): boolean {
   return tags.some((tag) => tag.toLowerCase() === "pinned");
 }
 
+function formatDateKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function getActivityCells(posts: PostSummary[], days = 140): ActivityCell[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const countByDate = posts.reduce<Record<string, number>>((acc, post) => {
+    const rawDate = post.date || post.updateAt;
+    const date = new Date(rawDate);
+
+    if (!Number.isNaN(date.getTime())) {
+      const key = formatDateKey(date);
+      acc[key] = (acc[key] ?? 0) + 1;
+    }
+
+    return acc;
+  }, {});
+
+  const cells: ActivityCell[] = [];
+
+  for (let offset = days - 1; offset >= 0; offset -= 1) {
+    const cursor = new Date(today);
+    cursor.setDate(today.getDate() - offset);
+    const dateKey = formatDateKey(cursor);
+
+    cells.push({
+      dateKey,
+      count: countByDate[dateKey] ?? 0
+    });
+  }
+
+  return cells;
+}
+
+function getActivityLevel(count: number): 0 | 1 | 2 | 3 | 4 {
+  if (count === 0) {
+    return 0;
+  }
+
+  if (count === 1) {
+    return 1;
+  }
+
+  if (count === 2) {
+    return 2;
+  }
+
+  if (count <= 4) {
+    return 3;
+  }
+
+  return 4;
+}
+
 export default async function OverviewPage() {
   const posts = await getPostsOrNull();
 
@@ -60,7 +122,8 @@ export default async function OverviewPage() {
 
   const popular = posts.filter((post) => isPinnedPost(post.tags));
   const recent = posts;
-  const collectionCount = new Set(posts.map((post) => post.category)).size;
+  const activityCells = getActivityCells(posts);
+  const activeDaysCount = activityCells.filter((cell) => cell.count > 0).length;
   const socialLinks = Object.entries(siteConfig.social).filter(([, href]) => Boolean(href));
 
   return (
@@ -92,12 +155,6 @@ export default async function OverviewPage() {
           </aside>
 
           <div className="overview-content-column">
-            <nav className="overview-inline-menu" aria-label="overview menu links">
-              <Link href="/overview">overview</Link>
-              <Link href="/collection">collection ({collectionCount})</Link>
-              <Link href="/articles">article ({posts.length})</Link>
-            </nav>
-
             <article className="overview-readme" aria-label="profile introduction">
               <h2>Hi there, I&apos;m {siteConfig.profile.name} 👋</h2>
               <ul className="readme-bullet-list">
@@ -106,6 +163,20 @@ export default async function OverviewPage() {
                 <li>🔎 관심사: Frontend DX, UI 디자인 시스템, 생산성 워크플로우.</li>
               </ul>
             </article>
+
+            <section className="overview-section" aria-label="posting activity">
+              <div className="overview-section-head">
+                <h2>활동 이력</h2>
+                <span className="section-more-link">최근 20주 · 활동일 {activeDaysCount}일</span>
+              </div>
+              <div className="activity-history-grid" role="img" aria-label="게시글 업로드 날짜 활동 이력">
+                {activityCells.map((cell) => {
+                  const level = getActivityLevel(cell.count);
+
+                  return <span key={cell.dateKey} className={`activity-cell level-${level}`} title={`${cell.dateKey} · ${cell.count} posts`} />;
+                })}
+              </div>
+            </section>
 
             <section className="overview-section">
               <div className="overview-section-head">
