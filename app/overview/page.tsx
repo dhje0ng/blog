@@ -178,8 +178,18 @@ export default async function OverviewPage() {
             <article className="overview-readme" aria-label="profile introduction">
               <div className="overview-map-banner">
                 <p>Located in Seoul, South Korea</p>
-                <div className="overview-map-wrap">
-                  <OverviewMap />
+                <div className="overview-map-layout">
+                  <div className="overview-map-wrap">
+                    <OverviewMap />
+                  </div>
+                  <aside className="overview-map-note" aria-label="overview introduction">
+                    <h3>Quick intro</h3>
+                    <p>
+                      Web과 Product를 좋아하고,
+                      <br />
+                      문제를 작게 나눠 빠르게 해결합니다.
+                    </p>
+                  </aside>
                 </div>
               </div>
               <div className="overview-readme-divider" aria-hidden="true" />

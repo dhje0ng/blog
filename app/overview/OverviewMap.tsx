@@ -52,7 +52,7 @@ export function OverviewMap() {
     <div
       className="overview-map-frame-shell"
       style={{
-        width: `min(100%, ${selectedMap.width}px)`
+        width: `min(100%, 440px)`
       }}
     >
       <Image
