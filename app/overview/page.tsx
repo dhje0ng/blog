@@ -15,6 +15,11 @@ type ActivityCell = {
   count: number;
 };
 
+type ActivityMonthLabel = {
+  month: string;
+  column: number;
+};
+
 function SocialLogo({ name }: { name: string }) {
   if (name === "github") {
     return (
@@ -61,9 +66,15 @@ function formatDateKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
-function getActivityCells(posts: PostSummary[], days = 56): ActivityCell[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+function getYearActivity(posts: PostSummary[], year: number): { cells: ActivityCell[]; monthLabels: ActivityMonthLabel[] } {
+  const startOfYear = new Date(year, 0, 1);
+  const endOfYear = new Date(year, 11, 31);
+
+  const firstGridDay = new Date(startOfYear);
+  firstGridDay.setDate(startOfYear.getDate() - startOfYear.getDay());
+
+  const lastGridDay = new Date(endOfYear);
+  lastGridDay.setDate(endOfYear.getDate() + (6 - endOfYear.getDay()));
 
   const countByDate = posts.reduce<Record<string, number>>((acc, post) => {
     const rawDate = post.date || post.updateAt;
@@ -79,18 +90,30 @@ function getActivityCells(posts: PostSummary[], days = 56): ActivityCell[] {
 
   const cells: ActivityCell[] = [];
 
-  for (let offset = days - 1; offset >= 0; offset -= 1) {
-    const cursor = new Date(today);
-    cursor.setDate(today.getDate() - offset);
+  const cursor = new Date(firstGridDay);
+
+  while (cursor <= lastGridDay) {
     const dateKey = formatDateKey(cursor);
 
     cells.push({
       dateKey,
       count: countByDate[dateKey] ?? 0
     });
+
+    cursor.setDate(cursor.getDate() + 1);
   }
 
-  return cells;
+  const monthLabels = Array.from({ length: 12 }, (_, monthIndex) => {
+    const monthStart = new Date(year, monthIndex, 1);
+    const diffDays = Math.floor((monthStart.getTime() - firstGridDay.getTime()) / (1000 * 60 * 60 * 24));
+
+    return {
+      month: monthStart.toLocaleString("en-US", { month: "short" }),
+      column: Math.floor(diffDays / 7)
+    };
+  });
+
+  return { cells, monthLabels };
 }
 
 function getActivityLevel(count: number): 0 | 1 | 2 | 3 | 4 {
@@ -122,8 +145,10 @@ export default async function OverviewPage() {
 
   const popular = posts.filter((post) => isPinnedPost(post.tags));
   const recent = posts;
-  const activityCells = getActivityCells(posts);
+  const currentYear = new Date().getFullYear();
+  const { cells: activityCells, monthLabels } = getYearActivity(posts, currentYear);
   const activeDaysCount = activityCells.filter((cell) => cell.count > 0).length;
+  const yearActivities = activityCells.reduce((sum, cell) => sum + cell.count, 0);
   const socialLinks = Object.entries(siteConfig.social).filter(([, href]) => Boolean(href));
 
   return (
@@ -167,14 +192,33 @@ export default async function OverviewPage() {
             <section className="overview-section" aria-label="posting activity">
               <div className="overview-section-head">
                 <h2>활동 이력</h2>
-                <span className="section-more-link">최근 8주 · 활동일 {activeDaysCount}일</span>
+                <span className="section-more-link">{currentYear}년 · 활동일 {activeDaysCount}일</span>
               </div>
-              <div className="activity-history-grid" role="img" aria-label="게시글 업로드 날짜 활동 이력">
-                {activityCells.map((cell) => {
-                  const level = getActivityLevel(cell.count);
+              <div className="activity-history-wrap">
+                <div className="activity-month-labels" aria-hidden="true">
+                  {monthLabels.map((label) => (
+                    <span key={label.month} style={{ gridColumn: `${label.column + 1}` }}>
+                      {label.month}
+                    </span>
+                  ))}
+                </div>
+                <div className="activity-history-grid" role="img" aria-label={`${currentYear}년 게시글 업로드 활동 이력`}>
+                  {activityCells.map((cell) => {
+                    const level = getActivityLevel(cell.count);
 
-                  return <span key={cell.dateKey} className={`activity-cell level-${level}`} title={`${cell.dateKey} · ${cell.count} posts`} />;
-                })}
+                    return <span key={cell.dateKey} className={`activity-cell level-${level}`} title={`${cell.dateKey} · ${cell.count} activities`} />;
+                  })}
+                </div>
+                <div className="activity-history-footer">
+                  <span>{yearActivities} activities in {currentYear}</span>
+                  <div className="activity-legend" aria-label="활동 강도 색상 단계">
+                    <span>Less</span>
+                    {[0, 1, 2, 3, 4].map((level) => (
+                      <span key={level} className={`activity-cell level-${level}`} aria-hidden="true" />
+                    ))}
+                    <span>More</span>
+                  </div>
+                </div>
               </div>
             </section>
 
