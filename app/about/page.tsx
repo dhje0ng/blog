@@ -32,10 +32,7 @@ export default function AboutPage() {
           <div>
             <p className="eyebrow">About</p>
             <h1>{siteConfig.profile.name}</h1>
-            <p className="about-hero-copy">
-              Hi, I’m a cybersecurity researcher from the Republic of Korea. 🇰🇷👋 <br>
-              Most of my work centers around automotive cybersecurity, protecting vehicles from potential attacks. I’m also passionate about finding and fixing software vulnerabilities through bug hunting. ✅ <br>
-              Always curious, I love learning from every challenge I face 😄
+            <p className="about-hero-copy">Hi, I’m a cybersecurity researcher from the Republic of Korea. 🇰🇷👋 <br> Most of my work centers around automotive cybersecurity, protecting vehicles from potential attacks. I’m also passionate about finding and fixing software vulnerabilities through bug hunting. ✅ <br> Always curious, I love learning from every challenge I face 😄
             </p>
             <div className="about-hero-actions">
               <Link href="/articles" className="about-action-primary">
