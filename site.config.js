@@ -1,9 +1,5 @@
 const notionPageId = process.env.NOTION_PAGE_ID ?? "";
 
-if (!notionPageId) {
-  throw new Error("NOTION_PAGE_ID is required for production deployment");
-}
-
 const siteConfig = {
   blog: {
     title: "N-Blog",
