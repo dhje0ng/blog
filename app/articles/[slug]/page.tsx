@@ -87,53 +87,57 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
           </div>
         ) : null}
 
-        <div className="post-detail-body container-narrow">
-          {!!tableOfContents.length && (
-            <section className="post-toc" aria-label="Table of Contents">
-              <h2>Table of Contents</h2>
-              <ol>
-                {tableOfContents.map((heading) => (
-                  <li key={heading.id} className={`post-toc-depth-${heading.level}`}>
-                    <a href={`#${heading.anchorId}`}>{heading.text}</a>
-                  </li>
+        <div className="post-detail-content-grid container-narrow">
+          <div className="post-detail-body">
+            {contentBlocks.map((block) => {
+              if (block.type === "heading") {
+                if (block.level === 1) {
+                  return (
+                    <h2 key={block.id} id={block.anchorId}>
+                      {block.text}
+                    </h2>
+                  );
+                }
+
+                if (block.level === 2) {
+                  return (
+                    <h3 key={block.id} id={block.anchorId}>
+                      {block.text}
+                    </h3>
+                  );
+                }
+
+                return (
+                  <h4 key={block.id} id={block.anchorId}>
+                    {block.text}
+                  </h4>
+                );
+              }
+
+              return <p key={block.id}>{block.text}</p>;
+            })}
+            {!!post.tags.length && (
+              <ul className="post-tag-list" aria-label="post tags">
+                {post.tags.map((tag) => (
+                  <li key={tag}>{tag}</li>
                 ))}
-              </ol>
-            </section>
-          )}
+              </ul>
+            )}
+          </div>
 
-          {contentBlocks.map((block) => {
-            if (block.type === "heading") {
-              if (block.level === 1) {
-                return (
-                  <h2 key={block.id} id={block.anchorId}>
-                    {block.text}
-                  </h2>
-                );
-              }
-
-              if (block.level === 2) {
-                return (
-                  <h3 key={block.id} id={block.anchorId}>
-                    {block.text}
-                  </h3>
-                );
-              }
-
-              return (
-                <h4 key={block.id} id={block.anchorId}>
-                  {block.text}
-                </h4>
-              );
-            }
-
-            return <p key={block.id}>{block.text}</p>;
-          })}
-          {!!post.tags.length && (
-            <ul className="post-tag-list" aria-label="post tags">
-              {post.tags.map((tag) => (
-                <li key={tag}>{tag}</li>
-              ))}
-            </ul>
+          {!!tableOfContents.length && (
+            <aside className="post-toc-sidebar" aria-label="Table of Contents">
+              <section className="post-toc">
+                <h2>Table of Contents</h2>
+                <ol>
+                  {tableOfContents.map((heading) => (
+                    <li key={heading.id} className={`post-toc-depth-${heading.level}`}>
+                      <a href={`#${heading.anchorId}`}>{heading.text}</a>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            </aside>
           )}
         </div>
       </article>
