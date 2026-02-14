@@ -1,16 +1,17 @@
 import { NotionAPI } from "notion-client";
 import { CategorySummary, PostSummary } from "@/lib/models/post";
+import siteConfig from "@/site.config";
 
 type NotionBlockValue = Record<string, unknown>;
 type NotionBlockMap = Record<string, { value?: unknown }>;
 type NotionCollectionSchema = Record<string, { name?: string; type?: string }>;
 
 const notion = new NotionAPI();
-const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
+const NOTION_PAGE_ID = siteConfig.notion.notion_page_id;
 
 const NOTION_DATA_UNAVAILABLE_ERRORS = new Set([
   "NOTION_CONFIG_MISSING",
-  "NOTION_DATABASE_ID_INVALID_FORMAT",
+  "NOTION_PAGE_ID_INVALID_FORMAT",
   "NOTION_DATABASE_PAGE_NOT_FOUND",
   "NOTION_DATABASE_UNREADABLE",
   "NOTION_COLLECTION_NOT_FOUND"
@@ -25,7 +26,7 @@ function normalizePageId(raw: string): string {
   const compact = (idFromUrl ?? raw.trim()).replace(/-/g, "");
 
   if (!/^[a-f0-9]{32}$/i.test(compact)) {
-    throw new Error("NOTION_DATABASE_ID_INVALID_FORMAT");
+    throw new Error("NOTION_PAGE_ID_INVALID_FORMAT");
   }
 
   return compact;
@@ -101,11 +102,11 @@ function mapValues<T>(source: Record<string, T> | undefined): T[] {
 }
 
 async function loadDatabaseRecordMap() {
-  if (!NOTION_DATABASE_ID) {
+  if (!NOTION_PAGE_ID) {
     throw new Error("NOTION_CONFIG_MISSING");
   }
 
-  const databasePageId = normalizePageId(NOTION_DATABASE_ID);
+  const databasePageId = normalizePageId(NOTION_PAGE_ID);
 
   try {
     return await notion.getPage(databasePageId);

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import siteConfig from "@/site.config";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Notion GitHub Blog Prototype",
-  description: "Next.js + Notion 기반의 화이트톤 GitHub 스타일 블로그 프로토타입"
+  title: siteConfig.blog.title,
+  description: siteConfig.blog.description
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang={siteConfig.blog.language}>
       <body>{children}</body>
     </html>
   );

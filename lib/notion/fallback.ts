@@ -16,6 +16,6 @@ export const FALLBACK_POSTS: PostSummary[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
     content:
-      "현재 노션 데이터베이스에 연결할 수 없어 예시 게시글을 표시하고 있습니다.\n\nNOTION_DATABASE_ID와 네트워크 연결 상태를 확인해 주세요."
+      "현재 노션 데이터베이스에 연결할 수 없어 예시 게시글을 표시하고 있습니다.\n\nNOTION_PAGE_ID와 네트워크 연결 상태를 확인해 주세요."
   }
 ];
