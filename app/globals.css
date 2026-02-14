@@ -814,7 +814,7 @@ a {
 }
 
 .overview-map-frame {
-  width: min(100%, 720px);
+  width: min(100%, 560px);
   height: auto;
   border: 0;
   display: block;
