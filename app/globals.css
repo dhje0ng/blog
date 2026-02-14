@@ -65,7 +65,7 @@ a {
 .gh-header-tools {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .gh-icon-button {
@@ -80,115 +80,11 @@ a {
   cursor: pointer;
   font-size: 17px;
   padding: 0;
-}
-
-.gh-icon-button {
   transition: color 0.2s ease;
 }
 
 .gh-icon-button:hover {
   color: var(--text);
-}
-
-.gh-quickmenu-search {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--muted);
-  border-radius: 999px;
-  height: 34px;
-  min-width: 132px;
-  padding: 0 11px;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-
-.gh-quickmenu-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 0.45);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 11;
-}
-
-.gh-quickmenu-backdrop.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.gh-quickmenu-modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s ease;
-  z-index: 12;
-}
-
-.gh-quickmenu-modal.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.gh-quickmenu-panel {
-  width: min(420px, calc(100vw - 32px));
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-  transform: translateY(8px);
-  transition: transform 0.22s ease;
-}
-
-.gh-quickmenu-modal.open .gh-quickmenu-panel {
-  transform: translateY(0);
-}
-
-.gh-quickmenu-modal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.gh-modal-close {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.gh-quickmenu-links {
-  display: grid;
-  gap: 4px;
-}
-
-.gh-nav-link {
-  color: var(--muted);
-  font-size: 14px;
-  padding: 10px;
-  border-radius: 10px;
-  transition: color 0.2s ease, background-color 0.2s ease;
-}
-
-.gh-nav-link:hover,
-.gh-nav-link.active {
-  color: var(--text);
-  background: var(--surface);
 }
 
 .gh-share-feedback {
@@ -510,7 +406,7 @@ a {
 
 .post-detail-body p {
   margin: 0 0 1.2em;
-  color: #2a2f36;
+  color: var(--text);
 }
 
 
@@ -519,7 +415,7 @@ a {
   padding: 16px 18px;
   border: 1px solid var(--line-subtle);
   border-radius: 14px;
-  background: #fafbfd;
+  background: var(--surface);
 }
 
 .post-toc h2 {
@@ -844,6 +740,38 @@ a {
 }
 
 
+.activity-history-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 4px;
+  overflow-x: auto;
+  padding: 2px;
+}
+
+.activity-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--line-subtle);
+}
+
+.activity-cell.level-1 {
+  background: color-mix(in srgb, var(--accent) 30%, var(--surface));
+}
+
+.activity-cell.level-2 {
+  background: color-mix(in srgb, var(--accent) 45%, var(--surface));
+}
+
+.activity-cell.level-3 {
+  background: color-mix(in srgb, var(--accent) 65%, var(--surface));
+}
+
+.activity-cell.level-4 {
+  background: color-mix(in srgb, var(--accent) 85%, var(--surface));
+}
+
 .overview-content-column {
   display: grid;
   gap: 24px;
@@ -1061,7 +989,4 @@ a {
     gap: 6px;
   }
 
-  .gh-quickmenu-search {
-    min-width: 106px;
-  }
 }
