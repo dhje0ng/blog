@@ -9,7 +9,7 @@ import { getPostsOrNull } from "@/lib/notion/safe";
 import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type ActivityCell = {
   dateKey: string;
@@ -137,6 +137,7 @@ export default async function OverviewPage() {
     };
   });
   const socialLinks = Object.entries(siteConfig.social).filter(([, href]) => Boolean(href));
+  const collectionCount = new Set(posts.map((post) => post.category)).size;
 
   return (
     <main>
@@ -164,6 +165,11 @@ export default async function OverviewPage() {
               </div>
             </div>
             <p className="profile-intro">{siteConfig.profile.intro}</p>
+            <nav className="overview-side-nav" aria-label="Overview navigation">
+              <Link href="/overview">Overview</Link>
+              <Link href="/collection">Collection ({collectionCount})</Link>
+              <Link href="/articles">Articles ({posts.length})</Link>
+            </nav>
           </aside>
 
           <div className="overview-content-column">

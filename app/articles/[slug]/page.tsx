@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { getPostBySlugOrNull } from "@/lib/notion/safe";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type PostPageProps = {
   params: Promise<{
