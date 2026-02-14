@@ -39,6 +39,28 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
     .filter(Boolean);
 
   const contentBlocks = lines.map((line, index) => {
+    const markdownImageMatch = line.match(/^!\[(.*?)\]\((https?:\/\/[^\s)]+)\)$/);
+
+    if (markdownImageMatch) {
+      return {
+        id: `${post.id}-image-${index}`,
+        type: "image" as const,
+        src: markdownImageMatch[2],
+        alt: markdownImageMatch[1] || post.title
+      };
+    }
+
+    const plainImageUrlMatch = line.match(/^(https?:\/\/\S+\.(?:png|jpe?g|gif|webp|svg)(?:\?\S*)?)$/i);
+
+    if (plainImageUrlMatch) {
+      return {
+        id: `${post.id}-image-${index}`,
+        type: "image" as const,
+        src: plainImageUrlMatch[1],
+        alt: post.title
+      };
+    }
+
     const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
 
     if (!headingMatch) {
@@ -111,6 +133,15 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                   <h4 key={block.id} id={block.anchorId}>
                     {block.text}
                   </h4>
+                );
+              }
+
+              if (block.type === "image") {
+                return (
+                  <figure key={block.id} className="post-detail-inline-image-wrap">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={block.src} alt={block.alt} className="post-detail-inline-image" loading="lazy" />
+                  </figure>
                 );
               }
 
