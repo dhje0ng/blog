@@ -125,7 +125,7 @@ export default async function OverviewPage() {
   }
 
   const popular = posts.filter((post) => isPinnedPost(post.tags));
-  const recent = posts;
+  const recent = posts.slice(0, 5);
   const currentYear = new Date().getFullYear();
   const activityYears = [currentYear, currentYear - 1, currentYear - 2].map((year) => {
     const { cells, monthLabels } = getYearActivity(posts, year);
