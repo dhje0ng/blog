@@ -178,8 +178,22 @@ export default async function OverviewPage() {
               <div className="overview-map-banner">
                 <p>Located in Seoul, South Korea</p>
                 <div className="overview-map-wrap">
-                  <Image src="/map_light.png" alt="Seoul map (light theme)" className="overview-map-frame overview-map-frame-light" width={960} height={420} priority={false} unoptimized />
-                  <Image src="/map_dark.png" alt="Seoul map (dark theme)" className="overview-map-frame overview-map-frame-dark" width={960} height={420} priority={false} unoptimized />
+                  <div className="overview-map-frame-shell">
+                    <Image
+                      src="/map_light.png"
+                      alt="Seoul map (light theme)"
+                      className="overview-map-frame overview-map-frame-light"
+                      fill
+                      sizes="(max-width: 1040px) calc(100vw - 92px), 560px"
+                    />
+                    <Image
+                      src="/map_dark.png"
+                      alt="Seoul map (dark theme)"
+                      className="overview-map-frame overview-map-frame-dark"
+                      fill
+                      sizes="(max-width: 1040px) calc(100vw - 92px), 560px"
+                    />
+                  </div>
                 </div>
               </div>
               <div className="overview-readme-divider" aria-hidden="true" />

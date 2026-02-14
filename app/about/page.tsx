@@ -59,16 +59,22 @@ export default function AboutPage() {
             <ul className="about-timeline">
               <li>
                 <span>Mar 2018 ~ Feb 2022</span>
-                <p>Yeungnam University Collage</p>
-                <p><small>Graduated from the Depts, Cybersecurity</small></p>
+                <div className="about-timeline-content">
+                  <p>Yeungnam University Collage</p>
+                  <p><small>Graduated from the Depts, Cybersecurity</small></p>
+                </div>
               </li>
               <li>
                 <span>2024</span>
-                <p>노션 기반 콘텐츠 자동 배포 파이프라인 구축</p>
+                <div className="about-timeline-content">
+                  <p>노션 기반 콘텐츠 자동 배포 파이프라인 구축</p>
+                </div>
               </li>
               <li>
                 <span>2023</span>
-                <p>보안 이벤트 분석 및 위협 탐지 룰 고도화 프로젝트 수행</p>
+                <div className="about-timeline-content">
+                  <p>보안 이벤트 분석 및 위협 탐지 룰 고도화 프로젝트 수행</p>
+                </div>
               </li>
             </ul>
           </article>
