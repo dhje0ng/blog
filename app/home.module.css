@@ -114,21 +114,6 @@
   font-size: 14px;
 }
 
-@media (max-width: 900px) {
-  .home__categoryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 
-@media (max-width: 640px) {
-  .home__postListGrid,
-  .home__categoryGrid {
-    grid-template-columns: 1fr;
-  }
 
-  .home__sectionTitleRow {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-  }
-}
+
