@@ -439,6 +439,17 @@ a {
   color: var(--text);
 }
 
+.post-detail-inline-image-wrap {
+  margin: 0 0 1.4em;
+}
+
+.post-detail-inline-image {
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--line-subtle);
+}
+
 
 .post-toc {
   margin: 0;
