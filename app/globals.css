@@ -53,21 +53,26 @@ a {
 
 .gh-nav {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 0;
 }
 
 .gh-nav-link {
   color: var(--muted);
   font-size: 14px;
-  border-radius: 999px;
-  padding: 8px 12px;
-  transition: all 0.2s ease;
+  padding: 2px 0;
+  transition: color 0.2s ease;
+}
+
+.gh-nav-link + .gh-nav-link::before {
+  content: "/";
+  color: var(--border);
+  margin: 0 8px;
 }
 
 .gh-nav-link:hover,
 .gh-nav-link.active {
   color: var(--text);
-  background: var(--surface);
 }
 
 .hero {
@@ -277,12 +282,7 @@ a {
     min-height: 60px;
   }
 
-  .gh-nav {
-    gap: 4px;
-  }
-
   .gh-nav-link {
-    padding: 7px 10px;
     font-size: 13px;
   }
 
@@ -534,8 +534,20 @@ a {
 }
 
 .overview-layout {
-  width: min(780px, 94vw);
+  width: min(1040px, 94vw);
   margin: 0 auto;
+}
+
+.overview-main-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 34px;
+  align-items: start;
+}
+
+.overview-profile-column {
+  position: sticky;
+  top: 90px;
 }
 
 .profile-avatar {
@@ -552,13 +564,19 @@ a {
   border-bottom: 1px solid var(--line-subtle);
 }
 
+.profile-name {
+  margin: 0;
+  font-size: 1.03rem;
+  letter-spacing: -0.01em;
+}
+
 .readme-head-row {
   display: flex;
   gap: 14px;
   align-items: center;
 }
 
-.overview-readme h1 {
+.overview-readme h2 {
   margin: 0;
   font-size: 1.35rem;
   letter-spacing: -0.01em;
@@ -572,6 +590,10 @@ a {
   line-height: 1.5;
 }
 
+.overview-profile-column .profile-intro {
+  margin-top: 12px;
+}
+
 .readme-bullet-list {
   margin: 14px 0 0;
   padding-left: 18px;
@@ -581,18 +603,21 @@ a {
   gap: 6px;
 }
 
-.overview-quick-nav {
-  margin-top: 12px;
+.overview-inline-menu {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-subtle);
+  font-size: 14px;
 }
 
-.overview-quick-nav a {
-  font-size: 13px;
-  color: #2d333a;
-  padding: 6px 10px;
-  border: 1px solid var(--line-subtle);
-  border-radius: 999px;
+.overview-inline-menu a {
+  color: var(--muted);
+}
+
+.overview-inline-menu a:hover {
+  color: var(--text);
 }
 
 .overview-content-column {
@@ -718,6 +743,22 @@ a {
 .overview-section .post-meta-row {
   font-size: 11px;
 }
+
+@media (max-width: 900px) {
+  .overview-main-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .overview-profile-column {
+    position: static;
+  }
+
+  .overview-inline-menu {
+    gap: 10px;
+  }
+}
+
 
 .articles-search {
   display: flex;
