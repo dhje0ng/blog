@@ -44,7 +44,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   return (
     <main>
       <Header />
-      <section className="container section-gap top-gap">
+      <section className="container section-gap top-gap mobile-viewer-page">
         <div className="section-title-row">
           <h1>{sectionTitle}</h1>
           <p>{sectionDescription}</p>

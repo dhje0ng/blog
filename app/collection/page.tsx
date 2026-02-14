@@ -33,7 +33,7 @@ export default async function CollectionPage() {
   return (
     <main>
       <Header />
-      <section className="container section-gap top-gap">
+      <section className="container section-gap top-gap mobile-viewer-page">
         <div className="section-title-row">
           <h1>Collection</h1>
           <p>카테고리별 글 묶음과 대표 게시글을 한 번에 확인할 수 있습니다.</p>
