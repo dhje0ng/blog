@@ -25,9 +25,6 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-      "notion-client": [
-        "./lib/notion/client"
       ]
     }
   },
