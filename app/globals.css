@@ -534,94 +534,74 @@ a {
 }
 
 .overview-layout {
-  display: grid;
-  grid-template-columns: 240px minmax(0, 680px);
-  justify-content: center;
-  gap: 22px;
-}
-
-.profile-column {
-  display: grid;
-  gap: 10px;
-  align-self: start;
-  position: sticky;
-  top: 78px;
-}
-
-.profile-card,
-.overview-intro-card {
-  border: 1px solid var(--line-subtle);
-  border-radius: 12px;
-  background: #fff;
-  padding: 12px;
+  width: min(780px, 94vw);
+  margin: 0 auto;
 }
 
 .profile-avatar {
-  width: 100%;
+  width: 88px;
+  height: 88px;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 50%;
   border: 1px solid var(--line-subtle);
-  margin-bottom: 10px;
 }
 
-.profile-card h1 {
+.overview-readme {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line-subtle);
+}
+
+.readme-head-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.overview-readme h1 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   letter-spacing: -0.01em;
 }
 
 .profile-handle,
 .profile-intro {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
 }
 
-.profile-meta-row {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.overview-intro-card h2 {
-  margin: 0;
-  font-size: 0.9rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--muted);
+.readme-bullet-list {
+  margin: 14px 0 0;
+  padding-left: 18px;
+  color: #2d333a;
+  font-size: 14px;
+  display: grid;
+  gap: 6px;
 }
 
 .overview-quick-nav {
-  margin-top: 8px;
-  display: grid;
-  gap: 4px;
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
 }
 
 .overview-quick-nav a {
   font-size: 13px;
   color: #2d333a;
-  padding: 4px 0;
-  border-bottom: 1px dashed var(--line-subtle);
-}
-
-.overview-quick-nav a:last-child {
-  border-bottom: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--line-subtle);
+  border-radius: 999px;
 }
 
 .overview-content-column {
   display: grid;
-  gap: 14px;
+  gap: 24px;
 }
 
 .overview-section {
-  border: 1px solid var(--line-subtle);
-  border-radius: 12px;
-  background: #fff;
-  padding: 14px;
+  padding: 0;
 }
 
 .overview-section-head {
@@ -645,21 +625,32 @@ a {
 .popular-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 
 .popular-card {
-  border: 1px solid var(--line-subtle);
-  border-radius: 10px;
-  padding: 10px;
+  padding: 8px 0;
   display: grid;
-  gap: 6px;
+  grid-template-columns: 160px 1fr;
+  gap: 14px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .popular-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(31, 35, 40, 0.08);
+  transform: translateY(-1px);
+}
+
+.popular-preview,
+.post-list-preview {
+  width: 100%;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #dfe7f3, #eef2f8);
+  background-size: cover;
+  background-position: center;
+}
+
+.popular-preview {
+  aspect-ratio: 16 / 10;
 }
 
 .popular-rank {
@@ -682,9 +673,30 @@ a {
 }
 
 .overview-section .post-list-item {
-  border-radius: 10px;
-  padding: 12px;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line-subtle);
+  padding: 10px 0 14px;
   gap: 8px;
+}
+
+.overview-section .post-list-item:last-child {
+  border-bottom: 0;
+}
+
+.overview-section .post-list-item:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.post-list-body.with-preview {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 14px;
+}
+
+.post-list-preview {
+  aspect-ratio: 16 / 10;
 }
 
 .overview-section .list-item-category {
@@ -770,19 +782,24 @@ a {
 }
 
 @media (max-width: 1024px) {
-  .overview-layout {
-    grid-template-columns: 1fr;
-    justify-content: initial;
-  }
-
-  .profile-column {
-    position: static;
-    grid-template-columns: 1fr 1fr;
+  .popular-card,
+  .post-list-body.with-preview {
+    grid-template-columns: 130px 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .profile-column {
+  .readme-head-row {
+    align-items: flex-start;
+  }
+
+  .popular-card,
+  .post-list-body.with-preview {
     grid-template-columns: 1fr;
+  }
+
+  .popular-preview,
+  .post-list-preview {
+    aspect-ratio: 16 / 9;
   }
 }
