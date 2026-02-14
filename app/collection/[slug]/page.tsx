@@ -53,7 +53,7 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
   return (
     <main>
       <Header />
-      <section className="container section-gap top-gap">
+      <section className="container section-gap top-gap mobile-viewer-page">
         <div className="collection-head">
           <Link href="/collection" className="collection-back-link">
             ← Collection

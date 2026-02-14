@@ -67,7 +67,7 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
   return (
     <main>
       <Header />
-      <article className="post-detail-wrap">
+      <article className="post-detail-wrap mobile-viewer-page mobile-viewer-detail">
         <div className="post-detail-head container-narrow">
           <p className="post-detail-kicker">{post.category}</p>
           <h1>{post.title}</h1>
