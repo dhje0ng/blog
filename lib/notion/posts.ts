@@ -80,6 +80,13 @@ function getPropertyByName(page: PageObjectResponse, names: string[]) {
   return undefined;
 }
 
+function getUserName(user: { name?: string } | Record<string, unknown>): string {
+  if (!("name" in user)) return "";
+
+  const name = user.name;
+  return typeof name === "string" ? name.trim() : "";
+}
+
 function readTextProperty(page: PageObjectResponse, names: string[]): string {
   const property = getPropertyByName(page, names);
   if (!property) return "";
@@ -91,6 +98,13 @@ function readTextProperty(page: PageObjectResponse, names: string[]): string {
   if (property.type === "phone_number") return property.phone_number ?? "";
   if (property.type === "select") return property.select?.name ?? "";
   if (property.type === "status") return property.status?.name ?? "";
+  if (property.type === "people") {
+    return property.people
+      .map((person) => getUserName(person))
+      .filter((name): name is string => Boolean(name))
+      .join(", ");
+  }
+  if (property.type === "created_by") return getUserName(property.created_by);
 
   return "";
 }
