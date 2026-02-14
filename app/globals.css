@@ -55,6 +55,8 @@ a {
   align-items: center;
   justify-content: space-between;
   min-height: 68px;
+  width: min(1240px, 96vw);
+  margin: 0 auto;
 }
 
 .brand {
@@ -66,6 +68,7 @@ a {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: auto;
 }
 
 .gh-icon-button {
@@ -649,8 +652,9 @@ a {
 }
 
 .overview-readme {
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--line-subtle);
+  border: 1px solid var(--line-subtle);
+  border-radius: 10px;
+  padding: 18px;
 }
 
 .profile-name {
