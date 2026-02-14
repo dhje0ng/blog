@@ -55,7 +55,7 @@ export function ActivityHistorySection({ years }: ActivityHistorySectionProps) {
   return (
     <section className="overview-section" aria-label="posting activity">
       <div className="overview-section-head activity-head-with-toggle">
-        <h2>활동 이력</h2>
+        <h2>Activities</h2>
         <div className="activity-year-toggle" role="tablist" aria-label="활동 이력 연도 선택">
           {years.map((year) => {
             const isSelected = year.year === selectedYear;
