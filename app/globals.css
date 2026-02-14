@@ -765,6 +765,26 @@ a {
   margin-top: 12px;
 }
 
+.overview-side-nav {
+  margin-top: 16px;
+  border-top: 1px solid var(--line-subtle);
+  padding-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.overview-side-nav a {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.overview-side-nav a:hover {
+  color: var(--link);
+}
+
 .profile-social-links {
   display: flex;
   gap: 10px;

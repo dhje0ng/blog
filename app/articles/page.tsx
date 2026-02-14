@@ -3,7 +3,7 @@ import { ArticlesSearchClient } from "@/app/articles/ArticlesSearchClient";
 import { Header } from "@/components/layout/Header";
 import { getPostsOrNull } from "@/lib/notion/safe";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type ArticlesPageProps = {
   searchParams: Promise<{

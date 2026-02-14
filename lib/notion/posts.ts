@@ -1,4 +1,5 @@
 import { isNotionClientError } from "@notionhq/client";
+import { unstable_cache } from "next/cache";
 import {
   BlockObjectResponse,
   DatabaseObjectResponse,
@@ -304,7 +305,7 @@ async function loadPages(databaseId: string): Promise<PageObjectResponse[]> {
   return pages;
 }
 
-export async function getPosts(): Promise<PostSummary[]> {
+async function fetchPosts(): Promise<PostSummary[]> {
   const database = await loadDatabase();
   const pages = await loadPages(database.id);
 
@@ -346,6 +347,15 @@ export async function getPosts(): Promise<PostSummary[]> {
   return posts
     .filter((post) => Boolean(post.id) && post.status === "public")
     .sort((a, b) => +new Date(b.date) - +new Date(a.date));
+}
+
+const getPostsCached = unstable_cache(fetchPosts, ["notion-posts"], {
+  revalidate: 300,
+  tags: ["notion-posts"]
+});
+
+export async function getPosts(): Promise<PostSummary[]> {
+  return getPostsCached();
 }
 
 export async function getPostBySlug(slug: string): Promise<PostSummary | null> {
