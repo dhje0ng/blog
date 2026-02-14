@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ROUTES } from "@/lib/constants/routes";
+import siteConfig from "@/site.config";
 
 export function Header() {
   const pathname = usePathname();
@@ -11,7 +12,7 @@ export function Header() {
     <header className="gh-header">
       <div className="container gh-header-inner">
         <Link className="brand" href="/overview">
-          N-Blog
+          {siteConfig.blog.title}
         </Link>
         <nav className="gh-nav" aria-label="Main navigation">
           {NAV_ROUTES.map((item) => {
