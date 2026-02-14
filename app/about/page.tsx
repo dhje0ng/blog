@@ -65,15 +65,10 @@ export default function AboutPage() {
                 </div>
               </li>
               <li>
-                <span>2024</span>
+                <span>July 2020 - Mar 2021</span>
                 <div className="about-timeline-content">
-                  <p>노션 기반 콘텐츠 자동 배포 파이프라인 구축</p>
-                </div>
-              </li>
-              <li>
-                <span>2023</span>
-                <div className="about-timeline-content">
-                  <p>보안 이벤트 분석 및 위협 탐지 룰 고도화 프로젝트 수행</p>
+                  <p>Best of the Best, KITRI</p>
+                  <p><small>Completed the Security Development Track</small></p>
                 </div>
               </li>
             </ul>
