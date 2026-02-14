@@ -1,20 +1,24 @@
-import { NotionAPI } from "@/lib/notion/client";
+import { isNotionClientError } from "@notionhq/client";
+import {
+  BlockObjectResponse,
+  DatabaseObjectResponse,
+  PageObjectResponse,
+  PartialBlockObjectResponse,
+  PartialDatabaseObjectResponse,
+  RichTextItemResponse
+} from "@notionhq/client/build/src/api-endpoints";
+import { getNotionClient } from "@/lib/notion/client";
 import { CategorySummary, PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
 
-type NotionBlockValue = Record<string, unknown>;
-type NotionBlockMap = Record<string, { value?: unknown }>;
-type NotionCollectionSchema = Record<string, { name?: string; type?: string }>;
-
-const notion = new NotionAPI();
-const NOTION_PAGE_ID = siteConfig.notion.notion_page_id;
+const NOTION_DATABASE_ID = siteConfig.notion.notion_page_id;
 
 const NOTION_DATA_UNAVAILABLE_ERRORS = new Set([
   "NOTION_CONFIG_MISSING",
+  "NOTION_TOKEN_MISSING",
   "NOTION_PAGE_ID_INVALID_FORMAT",
   "NOTION_DATABASE_PAGE_NOT_FOUND",
-  "NOTION_DATABASE_UNREADABLE",
-  "NOTION_COLLECTION_NOT_FOUND"
+  "NOTION_DATABASE_UNREADABLE"
 ]);
 
 export function isNotionDatabaseUnavailableError(error: unknown): boolean {
@@ -30,38 +34,6 @@ function normalizePageId(raw: string): string {
   }
 
   return compact;
-}
-
-function asRecord(value: unknown): Record<string, unknown> | null {
-  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : null;
-}
-
-function plainText(value: unknown): string {
-  if (!Array.isArray(value)) return "";
-
-  return value
-    .map((entry) => (Array.isArray(entry) && typeof entry[0] === "string" ? entry[0] : ""))
-    .join(" ")
-    .trim();
-}
-
-function resolvePropertyId(schema: NotionCollectionSchema, names: string[]): string | undefined {
-  const nameSet = new Set(names.map((name) => name.toLowerCase()));
-
-  for (const [propertyId, property] of Object.entries(schema)) {
-    const propertyName = (property.name ?? "").toLowerCase();
-    if (nameSet.has(propertyName)) {
-      return propertyId;
-    }
-  }
-
-  return undefined;
-}
-
-function readProperty(row: NotionBlockValue, propertyId?: string): string {
-  if (!propertyId) return "";
-  const properties = asRecord(row.properties);
-  return plainText(properties?.[propertyId]);
 }
 
 function normalizeStatus(status: string): "public" | "private" {
@@ -84,100 +56,199 @@ function parseTags(raw: string): string[] {
     .filter(Boolean);
 }
 
-function extractBodyFromChildren(row: NotionBlockValue, blockMap: NotionBlockMap): string {
-  const contentIds = Array.isArray(row.content) ? row.content.filter((id): id is string => typeof id === "string") : [];
-
-  return contentIds
-    .map((blockId) => {
-      const block = asRecord(blockMap[blockId]?.value);
-      const properties = asRecord(block?.properties);
-      return plainText(properties?.title);
-    })
-    .filter(Boolean)
-    .join("\n\n");
+function richTextToPlainText(value: RichTextItemResponse[]): string {
+  return value.map((item) => item.plain_text).join("").trim();
 }
 
-function mapValues<T>(source: Record<string, T> | undefined): T[] {
-  return source ? Object.values(source) : [];
+function isFullDatabase(result: DatabaseObjectResponse | PartialDatabaseObjectResponse): result is DatabaseObjectResponse {
+  return "title" in result;
 }
 
-async function loadDatabaseRecordMap() {
-  if (!NOTION_PAGE_ID) {
+function isFullPage(result: PageObjectResponse | { object: "page" }): result is PageObjectResponse {
+  return "properties" in result;
+}
+
+function getPropertyByName(page: PageObjectResponse, names: string[]) {
+  const nameSet = new Set(names.map((name) => name.toLowerCase()));
+
+  for (const [key, value] of Object.entries(page.properties)) {
+    if (nameSet.has(key.toLowerCase())) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function readTextProperty(page: PageObjectResponse, names: string[]): string {
+  const property = getPropertyByName(page, names);
+  if (!property) return "";
+
+  if (property.type === "title") return richTextToPlainText(property.title);
+  if (property.type === "rich_text") return richTextToPlainText(property.rich_text);
+  if (property.type === "url") return property.url ?? "";
+  if (property.type === "email") return property.email ?? "";
+  if (property.type === "phone_number") return property.phone_number ?? "";
+  if (property.type === "select") return property.select?.name ?? "";
+  if (property.type === "status") return property.status?.name ?? "";
+
+  return "";
+}
+
+function readDateProperty(page: PageObjectResponse, names: string[]): string {
+  const property = getPropertyByName(page, names);
+  if (property?.type !== "date") return "";
+  return property.date?.start ?? "";
+}
+
+function readMultiSelectProperty(page: PageObjectResponse, names: string[]): string[] {
+  const property = getPropertyByName(page, names);
+  if (!property) return [];
+
+  if (property.type === "multi_select") {
+    return property.multi_select.map((option) => option.name.trim()).filter(Boolean);
+  }
+
+  if (property.type === "rich_text") {
+    return parseTags(richTextToPlainText(property.rich_text));
+  }
+
+  return [];
+}
+
+function readThumbnailProperty(page: PageObjectResponse): string | undefined {
+  const prop = getPropertyByName(page, ["thumbnail", "thumb", "cover"]);
+
+  if (prop?.type === "url") return prop.url ?? undefined;
+  if (prop?.type === "files") {
+    const fileItem = prop.files[0];
+    if (!fileItem) return undefined;
+    if ("external" in fileItem) return fileItem.external.url;
+    if ("file" in fileItem) return fileItem.file.url;
+    return undefined;
+  }
+
+  if (page.cover && "external" in page.cover) return page.cover.external.url;
+  if (page.cover && "file" in page.cover) return page.cover.file.url;
+
+  return undefined;
+}
+
+function isBlockObject(block: BlockObjectResponse | PartialBlockObjectResponse): block is BlockObjectResponse {
+  return "type" in block;
+}
+
+function blockToMarkdownLine(block: BlockObjectResponse): string | null {
+  if (block.type === "paragraph") {
+    return richTextToPlainText(block.paragraph.rich_text);
+  }
+
+  if (block.type === "heading_1") return `# ${richTextToPlainText(block.heading_1.rich_text)}`;
+  if (block.type === "heading_2") return `## ${richTextToPlainText(block.heading_2.rich_text)}`;
+  if (block.type === "heading_3") return `### ${richTextToPlainText(block.heading_3.rich_text)}`;
+
+  return null;
+}
+
+async function loadPageContent(pageId: string): Promise<string> {
+  const notion = getNotionClient();
+  const lines: string[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const response = await notion.blocks.children.list({
+      block_id: pageId,
+      start_cursor: cursor,
+      page_size: 100
+    });
+
+    response.results.filter(isBlockObject).forEach((block) => {
+      const line = blockToMarkdownLine(block);
+      if (line) lines.push(line);
+    });
+
+    cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
+  } while (cursor);
+
+  return lines.filter(Boolean).join("\n\n");
+}
+
+async function loadDatabase(): Promise<DatabaseObjectResponse> {
+  if (!NOTION_DATABASE_ID) {
     throw new Error("NOTION_CONFIG_MISSING");
   }
 
-  const databasePageId = normalizePageId(NOTION_PAGE_ID);
+  const notion = getNotionClient();
+  const databaseId = normalizePageId(NOTION_DATABASE_ID);
 
   try {
-    return await notion.getPage(databasePageId);
-  } catch {
+    const database = await notion.databases.retrieve({ database_id: databaseId });
+
+    if (!isFullDatabase(database)) {
+      throw new Error("NOTION_DATABASE_UNREADABLE");
+    }
+
+    return database;
+  } catch (error) {
+    if (isNotionClientError(error) && error.code === "object_not_found") {
+      throw new Error("NOTION_DATABASE_PAGE_NOT_FOUND");
+    }
+
+    if (error instanceof Error && NOTION_DATA_UNAVAILABLE_ERRORS.has(error.message)) {
+      throw error;
+    }
+
     throw new Error("NOTION_DATABASE_UNREADABLE");
   }
 }
 
+async function loadPages(databaseId: string): Promise<PageObjectResponse[]> {
+  const notion = getNotionClient();
+  const pages: PageObjectResponse[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const response = await notion.databases.query({
+      database_id: databaseId,
+      start_cursor: cursor,
+      page_size: 100
+    });
+
+    response.results.forEach((result) => {
+      if (result.object === "page" && isFullPage(result)) {
+        pages.push(result);
+      }
+    });
+
+    cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
+  } while (cursor);
+
+  return pages;
+}
+
 export async function getPosts(): Promise<PostSummary[]> {
-  const recordMap = await loadDatabaseRecordMap();
-  const blockMap = (recordMap.block ?? {}) as unknown as NotionBlockMap;
-  const collectionMap = (recordMap.collection ?? {}) as unknown as Record<string, { value?: unknown }>;
+  const database = await loadDatabase();
+  const pages = await loadPages(database.id);
 
-  const databaseBlock = mapValues(blockMap)
-    .map((entry) => asRecord(entry.value))
-    .find((value) => value?.type === "collection_view_page" || value?.type === "collection_view");
+  const posts = await Promise.all(
+    pages.map(async (page) => {
+      const title = readTextProperty(page, ["title", "name"]) || "Untitled";
+      const slug = readTextProperty(page, ["slug", "url"]) || page.id.replace(/-/g, "");
+      const author = readTextProperty(page, ["author", "writer"]) || "Unknown";
+      const status = normalizeStatus(readTextProperty(page, ["status", "visibility"]));
+      const date = readDateProperty(page, ["date", "publish date", "published"]) || new Date().toISOString().split("T")[0];
+      const updateAt = readDateProperty(page, ["updateat", "updated at", "updated"]) || date;
+      const summary = readTextProperty(page, ["summary", "description", "excerpt"]);
+      const category = readTextProperty(page, ["category"]) || "Uncategorized";
+      const tags = readMultiSelectProperty(page, ["tags", "tag"]);
+      const thumbnail = readThumbnailProperty(page);
 
-  if (!databaseBlock) {
-    throw new Error("NOTION_DATABASE_PAGE_NOT_FOUND");
-  }
-
-  const collectionId = typeof databaseBlock.collection_id === "string" ? databaseBlock.collection_id : undefined;
-  if (!collectionId) {
-    throw new Error("NOTION_COLLECTION_NOT_FOUND");
-  }
-
-  const collection = asRecord(collectionMap[collectionId]?.value);
-  const schema = (asRecord(collection?.schema) ?? {}) as NotionCollectionSchema;
-
-  const property = {
-    title: resolvePropertyId(schema, ["title", "name"]),
-    slug: resolvePropertyId(schema, ["slug", "url"]),
-    author: resolvePropertyId(schema, ["author", "writer"]),
-    status: resolvePropertyId(schema, ["status", "visibility"]),
-    date: resolvePropertyId(schema, ["date", "publish date", "published"]),
-    updateAt: resolvePropertyId(schema, ["updateat", "updated at", "updated"]),
-    summary: resolvePropertyId(schema, ["summary", "description", "excerpt"]),
-    category: resolvePropertyId(schema, ["category"]),
-    tags: resolvePropertyId(schema, ["tags", "tag"]),
-    thumbnail: resolvePropertyId(schema, ["thumbnail", "thumb", "cover"]),
-    content: resolvePropertyId(schema, ["content", "body"])
-  };
-
-  const rows = mapValues(blockMap)
-    .map((entry) => asRecord(entry.value))
-    .filter((value): value is NotionBlockValue => Boolean(value))
-    .filter((value) => value.type === "page" && value.parent_id === collectionId);
-
-  return rows
-    .map((row) => {
-      const id = typeof row.id === "string" ? row.id : "";
-      const title = readProperty(row, property.title) || "Untitled";
-      const slug = readProperty(row, property.slug) || id;
-      const author = readProperty(row, property.author) || "Unknown";
-      const status = normalizeStatus(readProperty(row, property.status));
-      const date = readProperty(row, property.date) || new Date().toISOString().split("T")[0];
-      const updateAt = readProperty(row, property.updateAt) || date;
-      const summary = readProperty(row, property.summary);
-      const category = readProperty(row, property.category) || "Uncategorized";
-      const tags = parseTags(readProperty(row, property.tags));
-      const bodyFromProperty = readProperty(row, property.content);
-      const bodyFromChildren = extractBodyFromChildren(row, blockMap);
-      const content = bodyFromProperty || bodyFromChildren || summary;
-
-      const format = asRecord(row.format) ?? {};
-      const pageCover = typeof format.page_cover === "string" ? format.page_cover : undefined;
-      const displaySource = typeof format.display_source === "string" ? format.display_source : undefined;
-      const thumbnail = readProperty(row, property.thumbnail) || pageCover || displaySource;
+      const contentFromProperty = readTextProperty(page, ["content", "body"]);
+      const contentFromBlocks = await loadPageContent(page.id);
+      const content = contentFromProperty || contentFromBlocks || summary;
 
       return {
-        id,
+        id: page.id,
         title,
         slug,
         author,
@@ -192,6 +263,9 @@ export async function getPosts(): Promise<PostSummary[]> {
         content
       } satisfies PostSummary;
     })
+  );
+
+  return posts
     .filter((post) => Boolean(post.id) && post.status === "public")
     .sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }

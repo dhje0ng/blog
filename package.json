@@ -12,7 +12,7 @@
     "next": "^15.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "notion-client": "latest"
+    "@notionhq/client": "^2.2.15"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
