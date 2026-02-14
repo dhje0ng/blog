@@ -9,19 +9,20 @@ import { getPostsOrNull } from "@/lib/notion/safe";
 export const dynamic = "force-dynamic";
 
 type CategoryPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  const { slug } = await params;
   const posts = await getPostsOrNull();
 
   if (!posts) {
     return { title: "Not found" };
   }
 
-  const categoryName = posts.find((post) => getCategorySlug(post.category) === params.slug)?.category;
+  const categoryName = posts.find((post) => getCategorySlug(post.category) === slug)?.category;
 
   if (!categoryName) {
     return { title: "Collection not found" };
@@ -34,13 +35,14 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 }
 
 export default async function CategoryDetailPage({ params }: CategoryPageProps) {
+  const { slug } = await params;
   const posts = await getPostsOrNull();
 
   if (!posts) {
     notFound();
   }
 
-  const filteredPosts = posts.filter((post) => getCategorySlug(post.category) === params.slug);
+  const filteredPosts = posts.filter((post) => getCategorySlug(post.category) === slug);
 
   if (!filteredPosts.length) {
     notFound();
