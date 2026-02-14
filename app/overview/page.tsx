@@ -61,7 +61,7 @@ function formatDateKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
-function getActivityCells(posts: PostSummary[], days = 140): ActivityCell[] {
+function getActivityCells(posts: PostSummary[], days = 56): ActivityCell[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -167,7 +167,7 @@ export default async function OverviewPage() {
             <section className="overview-section" aria-label="posting activity">
               <div className="overview-section-head">
                 <h2>활동 이력</h2>
-                <span className="section-more-link">최근 20주 · 활동일 {activeDaysCount}일</span>
+                <span className="section-more-link">최근 8주 · 활동일 {activeDaysCount}일</span>
               </div>
               <div className="activity-history-grid" role="img" aria-label="게시글 업로드 날짜 활동 이력">
                 {activityCells.map((cell) => {
