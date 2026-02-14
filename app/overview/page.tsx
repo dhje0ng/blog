@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { ActivityHistorySection } from "@/app/overview/ActivityHistorySection";
-import { OverviewMap } from "@/app/overview/OverviewMap";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
@@ -179,7 +178,12 @@ export default async function OverviewPage() {
               <div className="overview-map-banner">
                 <p>Located in Seoul, South Korea</p>
                 <div className="overview-map-wrap">
-                  <OverviewMap />
+                  <iframe
+                    title="Map focused on Seoul"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=126.8390%2C37.4917%2C127.1170%2C37.6487&layer=mapnik&marker=37.5665%2C126.9780"
+                    className="overview-map-frame"
+                    loading="lazy"
+                  />
                 </div>
               </div>
               <div className="overview-readme-divider" aria-hidden="true" />
@@ -189,8 +193,7 @@ export default async function OverviewPage() {
               </ul>
               <div className="overview-readme-divider" aria-hidden="true" />
               <ul className="readme-history-list">
-                <li>2025 · 기술 블로그 구조 개선 및 검색 경험 고도화</li>
-                <li>2024 · 콘텐츠 운영 자동화를 위한 노션 연동 파이프라인 구축</li>
+                <li>[TMP] · Next.JS + React + Notion 으로 만들어진 블로그에요!</li>
               </ul>
             </article>
 
