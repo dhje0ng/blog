@@ -121,14 +121,15 @@ function readThumbnailProperty(page: PageObjectResponse): string | undefined {
 
   if (prop?.type === "url") return prop.url ?? undefined;
   if (prop?.type === "files") {
-    const file = prop.files[0];
-    if (!file) return undefined;
-    if (file.type === "external") return file.external.url;
-    return file.file.url;
+    const fileItem = prop.files[0];
+    if (!fileItem) return undefined;
+    if ("external" in fileItem) return fileItem.external.url;
+    if ("file" in fileItem) return fileItem.file.url;
+    return undefined;
   }
 
-  if (page.cover?.type === "external") return page.cover.external.url;
-  if (page.cover?.type === "file") return page.cover.file.url;
+  if (page.cover && "external" in page.cover) return page.cover.external.url;
+  if (page.cover && "file" in page.cover) return page.cover.file.url;
 
   return undefined;
 }
