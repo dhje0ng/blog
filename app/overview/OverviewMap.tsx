@@ -20,11 +20,6 @@ const MAP_IMAGE_BY_THEME: Record<ThemeMode, { src: string; alt: string; width: n
   }
 };
 
-const MAP_FRAME_SIZE = {
-  width: MAP_IMAGE_BY_THEME.dark.width,
-  height: MAP_IMAGE_BY_THEME.dark.height
-};
-
 function getDocumentTheme(): ThemeMode {
   if (typeof document === "undefined") {
     return "light";
@@ -57,16 +52,16 @@ export function OverviewMap() {
     <div
       className="overview-map-frame-shell"
       style={{
-        aspectRatio: `${MAP_FRAME_SIZE.width} / ${MAP_FRAME_SIZE.height}`,
-        maxWidth: `${MAP_FRAME_SIZE.width}px`
+        width: `min(100%, ${selectedMap.width}px)`
       }}
     >
       <Image
         src={selectedMap.src}
         alt={selectedMap.alt}
         className="overview-map-frame"
-        fill
-        sizes={`(max-width: 1040px) calc(100vw - 92px), ${MAP_FRAME_SIZE.width}px`}
+        width={selectedMap.width}
+        height={selectedMap.height}
+        sizes={`(max-width: 1040px) calc(100vw - 92px), ${selectedMap.width}px`}
       />
     </div>
   );
