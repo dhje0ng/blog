@@ -59,7 +59,7 @@ export function Header() {
 
   return (
     <header className="gh-header">
-      <div className="container gh-header-inner">
+      <div className="gh-header-inner">
         <Link className="brand" href="/overview">
           {siteConfig.blog.title}
         </Link>
