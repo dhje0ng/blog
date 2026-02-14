@@ -65,6 +65,10 @@ function extractTags(raw: string): string[] {
     .filter(Boolean);
 }
 
+function normalizeStatus(raw: string): "public" | "private" {
+  return raw.trim().toLowerCase() === "private" ? "private" : "public";
+}
+
 function resolveSchemaPropertyId(
   schema: Record<string, { name?: string; type?: string }> | undefined,
   candidates: string[]
@@ -134,10 +138,14 @@ export async function getPosts(): Promise<PostSummary[]> {
 
   const titleId = resolveSchemaPropertyId(schema, ["title", "name"]);
   const slugId = resolveSchemaPropertyId(schema, ["slug", "url"]);
+  const authorId = resolveSchemaPropertyId(schema, ["author", "writer"]);
+  const statusId = resolveSchemaPropertyId(schema, ["status", "visibility"]);
+  const dateId = resolveSchemaPropertyId(schema, ["date", "publish date", "published"]);
   const summaryId = resolveSchemaPropertyId(schema, ["summary", "description", "excerpt"]);
+  const thumbnailId = resolveSchemaPropertyId(schema, ["thumbnail", "thumb", "cover"]);
   const categoryId = resolveSchemaPropertyId(schema, ["category"]);
   const tagsId = resolveSchemaPropertyId(schema, ["tags", "tag"]);
-  const updatedId = resolveSchemaPropertyId(schema, ["updated", "date", "published", "publish date"]);
+  const updateAtId = resolveSchemaPropertyId(schema, ["updateat", "updated", "last updated", "updated at"]);
   const contentId = resolveSchemaPropertyId(schema, ["content", "body"]);
 
   const rows = Object.values(blockMap)
@@ -150,16 +158,20 @@ export async function getPosts(): Promise<PostSummary[]> {
       const id = (rowValue.id as string | undefined) ?? "";
       const title = extractPropertyText(rowValue, titleId) || "Untitled";
       const slug = extractPropertyText(rowValue, slugId) || id;
+      const author = extractPropertyText(rowValue, authorId) || "Unknown";
+      const status = normalizeStatus(extractPropertyText(rowValue, statusId));
+      const date = extractPropertyText(rowValue, dateId) || new Date().toISOString().split("T")[0];
       const summary = extractPropertyText(rowValue, summaryId);
+      const thumbnailFromProperty = extractPropertyText(rowValue, thumbnailId);
       const category = extractPropertyText(rowValue, categoryId) || "Uncategorized";
       const tags = extractTags(extractPropertyText(rowValue, tagsId));
-      const updatedAt = extractPropertyText(rowValue, updatedId) || new Date().toISOString().split("T")[0];
+      const updateAt = extractPropertyText(rowValue, updateAtId) || date;
       const blockContent = extractContentFromChildren(rowValue, blockMap);
       const propertyContent = extractPropertyText(rowValue, contentId);
       const content = propertyContent || blockContent || summary;
 
       const format = (rowValue.format ?? {}) as Record<string, unknown>;
-      const coverImage =
+      const thumbnailFromFormat =
         typeof format.page_cover === "string"
           ? (format.page_cover as string)
           : typeof format.display_source === "string"
@@ -170,18 +182,21 @@ export async function getPosts(): Promise<PostSummary[]> {
         id,
         title,
         slug,
+        author,
+        status,
+        date,
+        updateAt,
         summary,
         category,
         tags,
-        updatedAt,
         readingMinutes: Math.max(3, Math.ceil(content.length / 220)),
-        coverImage,
+        thumbnail: thumbnailFromProperty || thumbnailFromFormat,
         content
       } satisfies PostSummary;
     })
-    .filter((post) => Boolean(post.id));
+    .filter((post) => Boolean(post.id) && post.status === "public");
 
-  return posts.sort((a, b) => +new Date(b.updatedAt) - +new Date(a.updatedAt));
+  return posts.sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }
 
 export async function getPostBySlug(slug: string): Promise<PostSummary | null> {

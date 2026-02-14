@@ -15,6 +15,10 @@ const PROFILE = {
   avatar: "https://avatars.githubusercontent.com/u/9919?v=4"
 };
 
+function isPinnedPost(tags: string[]): boolean {
+  return tags.some((tag) => tag.toLowerCase() === "pinned");
+}
+
 export default async function OverviewPage() {
   const posts = await getPostsOrNull();
 
@@ -22,8 +26,8 @@ export default async function OverviewPage() {
     notFound();
   }
 
-  const popular = posts.slice(0, 3);
-  const recent = posts.slice(3);
+  const popular = posts.filter((post) => isPinnedPost(post.tags));
+  const recent = posts.filter((post) => !isPinnedPost(post.tags));
 
   return (
     <main>
@@ -53,14 +57,14 @@ export default async function OverviewPage() {
           <section className="overview-section">
             <div className="overview-section-head">
               <h2>인기 아티클</h2>
-              <Link href="/articles" className="section-more-link">
+              <Link href="/articles?section=popular" className="section-more-link">
                 더보기
               </Link>
             </div>
             <div className="popular-grid">
               {popular.map((post, index) => (
                 <Link key={post.id} href={`/articles/${post.slug}` as Route} className="popular-card">
-                  <div className="popular-preview" style={{ backgroundImage: `url(${post.coverImage ?? ""})` }} aria-hidden="true" />
+                  <div className="popular-preview" style={{ backgroundImage: `url(${post.thumbnail ?? ""})` }} aria-hidden="true" />
                   <div>
                     <span className="popular-rank">#{index + 1}</span>
                     <h3>{post.title}</h3>
@@ -74,7 +78,7 @@ export default async function OverviewPage() {
           <section className="overview-section">
             <div className="overview-section-head">
               <h2>최근 아티클</h2>
-              <Link href="/articles" className="section-more-link">
+              <Link href="/articles?section=recent" className="section-more-link">
                 더보기
               </Link>
             </div>

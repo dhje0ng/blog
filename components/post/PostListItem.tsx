@@ -13,7 +13,7 @@ export function PostListItem({ post, withPreview = false }: PostListItemProps) {
       <Link className="post-link" href={`/articles/${post.slug}` as Route}>
         <div className={withPreview ? "post-list-body with-preview" : "post-list-body"}>
           {withPreview ? (
-            <div className="post-list-preview" style={{ backgroundImage: `url(${post.coverImage ?? ""})` }} aria-hidden="true" />
+            <div className="post-list-preview" style={{ backgroundImage: `url(${post.thumbnail ?? ""})` }} aria-hidden="true" />
           ) : null}
           <div>
             <span className="list-item-category">{post.category}</span>
@@ -22,7 +22,7 @@ export function PostListItem({ post, withPreview = false }: PostListItemProps) {
           </div>
         </div>
         <div className="post-meta-row">
-          <time>{post.updatedAt}</time>
+          <time>{post.updateAt}</time>
           <span>{post.readingMinutes} min</span>
         </div>
       </Link>

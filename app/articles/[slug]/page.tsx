@@ -45,15 +45,15 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
           <h1>{post.title}</h1>
           <p className="post-detail-summary">{post.summary}</p>
           <div className="post-detail-meta">
-            <time>{post.updatedAt}</time>
+            <time>{post.updateAt}</time>
             <span>·</span>
             <span>{post.readingMinutes} min read</span>
           </div>
         </div>
 
-        {post.coverImage ? (
+        {post.thumbnail ? (
           <div className="post-detail-cover-wrap container-narrow">
-            <div className="post-detail-cover" style={{ backgroundImage: `url(${post.coverImage})` }} aria-hidden="true" />
+            <div className="post-detail-cover" style={{ backgroundImage: `url(${post.thumbnail})` }} aria-hidden="true" />
           </div>
         ) : null}
 

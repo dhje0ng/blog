@@ -2,12 +2,15 @@ export type PostSummary = {
   id: string;
   title: string;
   slug: string;
+  author: string;
+  status: "public" | "private";
+  date: string;
+  updateAt: string;
   summary: string;
   tags: string[];
   category: string;
-  updatedAt: string;
   readingMinutes: number;
-  coverImage?: string;
+  thumbnail?: string;
   content?: string;
 };
 
