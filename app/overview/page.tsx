@@ -3,6 +3,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
+import { OverviewTools } from "@/components/layout/OverviewTools";
 import { PostListItem } from "@/components/post/PostListItem";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import siteConfig from "@/site.config";
@@ -60,7 +61,6 @@ export default async function OverviewPage() {
 
   const popular = posts.filter((post) => isPinnedPost(post.tags));
   const recent = posts;
-  const collectionCount = new Set(posts.map((post) => post.category)).size;
   const socialLinks = Object.entries(siteConfig.social).filter(([, href]) => Boolean(href));
 
   return (
@@ -92,11 +92,7 @@ export default async function OverviewPage() {
           </aside>
 
           <div className="overview-content-column">
-            <nav className="overview-inline-menu" aria-label="overview menu links">
-              <Link href="/overview">overview</Link>
-              <Link href="/collection">collection ({collectionCount})</Link>
-              <Link href="/articles">article ({posts.length})</Link>
-            </nav>
+            <OverviewTools />
 
             <article className="overview-readme" aria-label="profile introduction">
               <h2>Hi there, I&apos;m {siteConfig.profile.name} 👋</h2>
