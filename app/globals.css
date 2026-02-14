@@ -341,7 +341,7 @@ a {
 
 .post-detail-head h1 {
   margin: 0;
-  font-size: clamp(2rem, 4.2vw, 3.15rem);
+  font-size: clamp(1.75rem, 3.6vw, 2.6rem);
   line-height: 1.2;
   letter-spacing: -0.03em;
 }
@@ -382,6 +382,69 @@ a {
 .post-detail-body p {
   margin: 0 0 1.2em;
   color: #2a2f36;
+}
+
+
+.post-toc {
+  margin: 0 0 26px;
+  padding: 16px 18px;
+  border: 1px solid var(--line-subtle);
+  border-radius: 14px;
+  background: #fafbfd;
+}
+
+.post-toc h2 {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.post-toc ol {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.post-toc li {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.post-toc a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.post-toc a:hover {
+  color: var(--text);
+}
+
+.post-toc-depth-2 {
+  margin-left: 10px;
+}
+
+.post-toc-depth-3 {
+  margin-left: 20px;
+}
+
+.post-detail-body h2,
+.post-detail-body h3,
+.post-detail-body h4 {
+  margin: 1.6em 0 0.7em;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.post-detail-body h2 {
+  font-size: 1.32rem;
+}
+
+.post-detail-body h3 {
+  font-size: 1.14rem;
+}
+
+.post-detail-body h4 {
+  font-size: 1.02rem;
 }
 
 .post-tag-list {
@@ -617,6 +680,17 @@ a {
 .profile-social-links a:hover {
   border-color: var(--line-default);
   transform: translateY(-1px);
+}
+
+.social-logo-wrap {
+  width: 15px;
+  height: 15px;
+  display: inline-flex;
+}
+
+.social-logo-wrap svg {
+  width: 100%;
+  height: 100%;
 }
 
 .sr-only {
