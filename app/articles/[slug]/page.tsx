@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
+import { CodeBlockTabs } from "@/components/post/CodeBlockTabs";
 import { getPostBySlugOrNull } from "@/lib/notion/safe";
 
 export const revalidate = 300;
@@ -62,38 +63,105 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
     return nodes;
   };
 
-  const lines = (post.content ?? post.summary)
-    .split("\n")
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const markdownSource = post.content ?? post.summary;
+  const rawLines = markdownSource.split("\n");
+  const contentBlocks: Array<
+    | { id: string; type: "image"; src: string; alt: string }
+    | { id: string; type: "paragraph"; text: string }
+    | { id: string; type: "heading"; text: string; level: number; anchorId: string }
+    | { id: string; type: "code"; variants: Array<{ language: string; code: string }> }
+  > = [];
 
-  const contentBlocks = lines.map((line, index) => {
-    const markdownImageMatch = line.match(/^!\[(.*?)\]\((https?:\/\/[^\s)]+)\)$/);
+  let lineIndex = 0;
+
+  while (lineIndex < rawLines.length) {
+    const currentLine = rawLines[lineIndex];
+    const trimmedLine = currentLine.trim();
+
+    if (!trimmedLine) {
+      lineIndex += 1;
+      continue;
+    }
+
+    const codeFenceMatch = trimmedLine.match(/^```([^`]*)$/);
+
+    if (codeFenceMatch) {
+      const codeVariants: Array<{ language: string; code: string }> = [];
+      let cursor = lineIndex;
+
+      while (cursor < rawLines.length) {
+        const openFenceMatch = rawLines[cursor].trim().match(/^```([^`]*)$/);
+
+        if (!openFenceMatch) break;
+
+        const language = openFenceMatch[1].trim().toLowerCase() || "text";
+        cursor += 1;
+        const codeLines: string[] = [];
+
+        while (cursor < rawLines.length && !rawLines[cursor].trim().match(/^```$/)) {
+          codeLines.push(rawLines[cursor]);
+          cursor += 1;
+        }
+
+        if (cursor < rawLines.length && rawLines[cursor].trim() === "```") {
+          cursor += 1;
+        }
+
+        codeVariants.push({ language, code: codeLines.join("\n") });
+
+        while (cursor < rawLines.length && !rawLines[cursor].trim()) {
+          cursor += 1;
+        }
+
+        if (!rawLines[cursor]?.trim().match(/^```([^`]*)$/)) {
+          break;
+        }
+      }
+
+      if (codeVariants.length) {
+        contentBlocks.push({
+          id: `${post.id}-code-${lineIndex}`,
+          type: "code",
+          variants: codeVariants
+        });
+      }
+
+      lineIndex = cursor;
+      continue;
+    }
+
+    const markdownImageMatch = trimmedLine.match(/^!\[(.*?)\]\((https?:\/\/[^\s)]+)\)$/);
 
     if (markdownImageMatch) {
-      return {
-        id: `${post.id}-image-${index}`,
-        type: "image" as const,
+      contentBlocks.push({
+        id: `${post.id}-image-${lineIndex}`,
+        type: "image",
         src: markdownImageMatch[2],
         alt: markdownImageMatch[1] || post.title
-      };
+      });
+      lineIndex += 1;
+      continue;
     }
 
-    const plainImageUrlMatch = line.match(/^(https?:\/\/\S+\.(?:png|jpe?g|gif|webp|svg)(?:\?\S*)?)$/i);
+    const plainImageUrlMatch = trimmedLine.match(/^(https?:\/\/\S+\.(?:png|jpe?g|gif|webp|svg)(?:\?\S*)?)$/i);
 
     if (plainImageUrlMatch) {
-      return {
-        id: `${post.id}-image-${index}`,
-        type: "image" as const,
+      contentBlocks.push({
+        id: `${post.id}-image-${lineIndex}`,
+        type: "image",
         src: plainImageUrlMatch[1],
         alt: post.title
-      };
+      });
+      lineIndex += 1;
+      continue;
     }
 
-    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    const headingMatch = trimmedLine.match(/^(#{1,3})\s+(.+)$/);
 
     if (!headingMatch) {
-      return { id: `${post.id}-paragraph-${index}`, type: "paragraph" as const, text: line };
+      contentBlocks.push({ id: `${post.id}-paragraph-${lineIndex}`, type: "paragraph", text: trimmedLine });
+      lineIndex += 1;
+      continue;
     }
 
     const level = Math.min(headingMatch[1].length, 3);
@@ -104,14 +172,16 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
       .trim()
       .replace(/\s+/g, "-")}`;
 
-    return {
-      id: `${post.id}-heading-${index}`,
-      type: "heading" as const,
+    contentBlocks.push({
+      id: `${post.id}-heading-${lineIndex}`,
+      type: "heading",
       text,
       level,
       anchorId
-    };
-  });
+    });
+
+    lineIndex += 1;
+  }
 
   const tableOfContents = contentBlocks.filter((block): block is Extract<(typeof contentBlocks)[number], { type: "heading" }> => block.type === "heading");
 
@@ -172,6 +242,10 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                     <img src={block.src} alt={block.alt} className="post-detail-inline-image" loading="lazy" />
                   </figure>
                 );
+              }
+
+              if (block.type === "code") {
+                return <CodeBlockTabs key={block.id} variants={block.variants} />;
               }
 
               return <p key={block.id}>{renderTextWithLinks(block.text)}</p>;
