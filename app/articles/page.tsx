@@ -34,7 +34,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
     section === "popular"
       ? posts.filter((post) => isPinnedPost(post.tags))
       : section === "recent"
-        ? posts.filter((post) => !isPinnedPost(post.tags))
+        ? posts
         : posts;
 
   const filteredPosts = query
@@ -48,7 +48,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
     section === "popular"
       ? "인기 아티클 섹션에 등록된 게시글 목록입니다."
       : section === "recent"
-        ? "최근 아티클 섹션에 등록된 게시글 목록입니다."
+        ? "최근 순으로 정렬된 전체 아티클 목록입니다."
         : "전체 게시글 목록입니다.";
 
   return (
