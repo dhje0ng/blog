@@ -812,6 +812,19 @@ a {
   height: 210px;
   border: 0;
   display: block;
+  object-fit: cover;
+}
+
+.overview-map-frame-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .overview-map-frame-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .overview-map-frame-dark {
+  display: block;
 }
 
 .overview-readme-divider {
@@ -1333,10 +1346,14 @@ a {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  align-items: stretch;
 }
 
 .about-panel {
   padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .about-panel h2 {
@@ -1354,7 +1371,7 @@ a {
 
 .about-timeline li {
   display: grid;
-  grid-template-columns: 56px 1fr;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
   gap: 12px;
   align-items: start;
 }
@@ -1368,6 +1385,10 @@ a {
 .about-timeline p {
   margin: 0;
   line-height: 1.5;
+}
+
+.about-timeline li p + p {
+  margin-top: 4px;
 }
 
 .about-skill-cloud {
