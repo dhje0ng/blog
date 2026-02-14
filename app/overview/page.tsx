@@ -167,6 +167,7 @@ export default async function OverviewPage() {
             <p className="profile-intro">{siteConfig.profile.intro}</p>
             <nav className="overview-side-nav" aria-label="Overview navigation">
               <Link href="/overview">Overview</Link>
+              <Link href="/about">About</Link>
               <Link href="/collection">Collection ({collectionCount})</Link>
               <Link href="/articles">Articles ({posts.length})</Link>
             </nav>
