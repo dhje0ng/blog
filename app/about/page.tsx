@@ -74,27 +74,6 @@ export default function AboutPage() {
             </ul>
           </article>
 
-        <section className="about-grid-section">
-          <article className="about-panel">
-            <h2>Work Experience</h2>
-            <ul className="about-timeline">
-              <li>
-                <span>Mar 2018 ~ Feb 2022</span>
-                <div className="about-timeline-content">
-                  <p>Directly subordinate unit to the Ministry of National Defense [REDACTED]</p>
-                  <p><small>[REDACTED]</small></p>
-                </div>
-              </li>
-              <li>
-                <span>Jun 2021 ~ Dec 2024</span>
-                <div className="about-timeline-content">
-                  <p>Autocrypt, Redteam</p>
-                  <p><small>Vehicle Penetration Testing, 0/1-day Research</small></p>
-                </div>
-              </li>
-            </ul>
-          </article>
-
           <article className="about-panel">
             <h2>Capabilities</h2>
             <div className="about-skill-cloud">
