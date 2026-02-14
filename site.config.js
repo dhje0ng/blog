@@ -10,7 +10,7 @@ const siteConfig = {
     name: "Donghyeon Jeong",
     handle: "@dhjeong",
     intro: "Cyber Security Engineer",
-    avatar: "/avatar.svg"
+    avatar: "/IMG_5214.jpeg
   },
   social: {
     github: "https://github.com/dhje0ng",
