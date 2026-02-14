@@ -171,13 +171,11 @@ export default async function OverviewPage() {
               <div className="overview-map-banner">
                 <p>Located in Seoul, South Korea</p>
                 <div className="overview-map-wrap">
-                  <Image
-                    src="https://staticmap.openstreetmap.de/staticmap.php?center=37.5665,126.9780&zoom=11&size=1200x600&markers=37.5665,126.9780,red-pushpin"
-                    alt="Static map focused on Seoul"
-                    width={1200}
-                    height={600}
-                    unoptimized
-                    className="overview-map-static-image"
+                  <iframe
+                    title="Map focused on Seoul"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=126.8390%2C37.4917%2C127.1170%2C37.6487&layer=mapnik&marker=37.5665%2C126.9780"
+                    className="overview-map-frame"
+                    loading="lazy"
                   />
                 </div>
               </div>
