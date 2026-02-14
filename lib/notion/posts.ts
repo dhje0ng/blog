@@ -2,7 +2,7 @@ import { NotionAPI } from "notion-client";
 import { CategorySummary, PostSummary } from "@/lib/models/post";
 
 type NotionBlockValue = Record<string, unknown>;
-type NotionBlockMap = Record<string, { value?: NotionBlockValue }>;
+type NotionBlockMap = Record<string, { value?: unknown }>;
 type NotionCollectionSchema = Record<string, { name?: string; type?: string }>;
 
 const notion = new NotionAPI();
@@ -31,6 +31,10 @@ function normalizePageId(raw: string): string {
   return compact;
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : null;
+}
+
 function plainText(value: unknown): string {
   if (!Array.isArray(value)) return "";
 
@@ -55,7 +59,7 @@ function resolvePropertyId(schema: NotionCollectionSchema, names: string[]): str
 
 function readProperty(row: NotionBlockValue, propertyId?: string): string {
   if (!propertyId) return "";
-  const properties = row.properties as Record<string, unknown> | undefined;
+  const properties = asRecord(row.properties);
   return plainText(properties?.[propertyId]);
 }
 
@@ -80,15 +84,20 @@ function parseTags(raw: string): string[] {
 }
 
 function extractBodyFromChildren(row: NotionBlockValue, blockMap: NotionBlockMap): string {
-  const contentIds = Array.isArray(row.content) ? (row.content as string[]) : [];
+  const contentIds = Array.isArray(row.content) ? row.content.filter((id): id is string => typeof id === "string") : [];
 
   return contentIds
     .map((blockId) => {
-      const properties = blockMap[blockId]?.value?.properties as Record<string, unknown> | undefined;
+      const block = asRecord(blockMap[blockId]?.value);
+      const properties = asRecord(block?.properties);
       return plainText(properties?.title);
     })
     .filter(Boolean)
     .join("\n\n");
+}
+
+function mapValues<T>(source: Record<string, T> | undefined): T[] {
+  return source ? Object.values(source) : [];
 }
 
 async function loadDatabaseRecordMap() {
@@ -107,23 +116,24 @@ async function loadDatabaseRecordMap() {
 
 export async function getPosts(): Promise<PostSummary[]> {
   const recordMap = await loadDatabaseRecordMap();
-  const blockMap = (recordMap.block ?? {}) as NotionBlockMap;
-  const collectionMap = (recordMap.collection ?? {}) as Record<string, { value?: Record<string, unknown> }>;
+  const blockMap = (recordMap.block ?? {}) as unknown as NotionBlockMap;
+  const collectionMap = (recordMap.collection ?? {}) as unknown as Record<string, { value?: unknown }>;
 
-  const databaseBlock = Object.values(blockMap)
-    .map((entry) => entry.value)
+  const databaseBlock = mapValues(blockMap)
+    .map((entry) => asRecord(entry.value))
     .find((value) => value?.type === "collection_view_page" || value?.type === "collection_view");
 
   if (!databaseBlock) {
     throw new Error("NOTION_DATABASE_PAGE_NOT_FOUND");
   }
 
-  const collectionId = databaseBlock.collection_id as string | undefined;
+  const collectionId = typeof databaseBlock.collection_id === "string" ? databaseBlock.collection_id : undefined;
   if (!collectionId) {
     throw new Error("NOTION_COLLECTION_NOT_FOUND");
   }
 
-  const schema = (collectionMap[collectionId]?.value?.schema ?? {}) as NotionCollectionSchema;
+  const collection = asRecord(collectionMap[collectionId]?.value);
+  const schema = (asRecord(collection?.schema) ?? {}) as NotionCollectionSchema;
 
   const property = {
     title: resolvePropertyId(schema, ["title", "name"]),
@@ -139,14 +149,14 @@ export async function getPosts(): Promise<PostSummary[]> {
     content: resolvePropertyId(schema, ["content", "body"])
   };
 
-  const rows = Object.values(blockMap)
-    .map((entry) => entry.value)
+  const rows = mapValues(blockMap)
+    .map((entry) => asRecord(entry.value))
     .filter((value): value is NotionBlockValue => Boolean(value))
     .filter((value) => value.type === "page" && value.parent_id === collectionId);
 
   return rows
     .map((row) => {
-      const id = (row.id as string | undefined) ?? "";
+      const id = typeof row.id === "string" ? row.id : "";
       const title = readProperty(row, property.title) || "Untitled";
       const slug = readProperty(row, property.slug) || id;
       const author = readProperty(row, property.author) || "Unknown";
@@ -160,14 +170,10 @@ export async function getPosts(): Promise<PostSummary[]> {
       const bodyFromChildren = extractBodyFromChildren(row, blockMap);
       const content = bodyFromProperty || bodyFromChildren || summary;
 
-      const format = (row.format ?? {}) as Record<string, unknown>;
-      const thumbnail =
-        readProperty(row, property.thumbnail) ||
-        (typeof format.page_cover === "string"
-          ? format.page_cover
-          : typeof format.display_source === "string"
-            ? format.display_source
-            : undefined);
+      const format = asRecord(row.format) ?? {};
+      const pageCover = typeof format.page_cover === "string" ? format.page_cover : undefined;
+      const displaySource = typeof format.display_source === "string" ? format.display_source : undefined;
+      const thumbnail = readProperty(row, property.thumbnail) || pageCover || displaySource;
 
       return {
         id,
