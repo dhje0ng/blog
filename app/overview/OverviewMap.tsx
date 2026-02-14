@@ -49,12 +49,7 @@ export function OverviewMap() {
   const selectedMap = MAP_IMAGE_BY_THEME[theme];
 
   return (
-    <div
-      className="overview-map-frame-shell"
-      style={{
-        width: `min(100%, ${selectedMap.width}px)`
-      }}
-    >
+    <div className="overview-map-frame-shell">
       <Image
         src={selectedMap.src}
         alt={selectedMap.alt}
