@@ -6,13 +6,14 @@ import { getPostBySlugOrNull } from "@/lib/notion/safe";
 export const dynamic = "force-dynamic";
 
 type PostPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
-  const post = await getPostBySlugOrNull(params.slug);
+  const { slug } = await params;
+  const post = await getPostBySlugOrNull(slug);
 
   if (!post) {
     return { title: "Post not found" };
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 }
 
 export default async function ArticleDetailPage({ params }: PostPageProps) {
-  const post = await getPostBySlugOrNull(params.slug);
+  const { slug } = await params;
+  const post = await getPostBySlugOrNull(slug);
 
   if (!post) {
     notFound();

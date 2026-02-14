@@ -1,4 +1,4 @@
-import { NotionAPI } from "notion-client";
+import { NotionAPI } from "@/lib/notion/client";
 import { CategorySummary, PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
 
