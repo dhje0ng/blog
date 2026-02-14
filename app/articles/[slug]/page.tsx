@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { getPostBySlugOrNull } from "@/lib/notion/safe";
 
@@ -32,6 +34,33 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
   if (!post) {
     notFound();
   }
+
+  const renderTextWithLinks = (text: string) => {
+    const pattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    const nodes: ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        nodes.push(text.slice(lastIndex, match.index));
+      }
+
+      nodes.push(
+        <Link key={`${match[2]}-${match.index}`} href={match[2]} target="_blank" rel="noreferrer noopener">
+          {match[1]}
+        </Link>
+      );
+
+      lastIndex = pattern.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      nodes.push(text.slice(lastIndex));
+    }
+
+    return nodes;
+  };
 
   const lines = (post.content ?? post.summary)
     .split("\n")
@@ -116,7 +145,7 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                 if (block.level === 1) {
                   return (
                     <h2 key={block.id} id={block.anchorId}>
-                      {block.text}
+                      {renderTextWithLinks(block.text)}
                     </h2>
                   );
                 }
@@ -124,14 +153,14 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                 if (block.level === 2) {
                   return (
                     <h3 key={block.id} id={block.anchorId}>
-                      {block.text}
+                      {renderTextWithLinks(block.text)}
                     </h3>
                   );
                 }
 
                 return (
                   <h4 key={block.id} id={block.anchorId}>
-                    {block.text}
+                    {renderTextWithLinks(block.text)}
                   </h4>
                 );
               }
@@ -145,7 +174,7 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                 );
               }
 
-              return <p key={block.id}>{block.text}</p>;
+              return <p key={block.id}>{renderTextWithLinks(block.text)}</p>;
             })}
             {!!post.tags.length && (
               <ul className="post-tag-list" aria-label="post tags">
