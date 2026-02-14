@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { ActivityHistorySection } from "@/app/overview/ActivityHistorySection";
+import { OverviewMap } from "@/app/overview/OverviewMap";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
@@ -178,22 +179,7 @@ export default async function OverviewPage() {
               <div className="overview-map-banner">
                 <p>Located in Seoul, South Korea</p>
                 <div className="overview-map-wrap">
-                  <div className="overview-map-frame-shell">
-                    <Image
-                      src="/map_light.png"
-                      alt="Seoul map (light theme)"
-                      className="overview-map-frame overview-map-frame-light"
-                      fill
-                      sizes="(max-width: 1040px) calc(100vw - 92px), 560px"
-                    />
-                    <Image
-                      src="/map_dark.png"
-                      alt="Seoul map (dark theme)"
-                      className="overview-map-frame overview-map-frame-dark"
-                      fill
-                      sizes="(max-width: 1040px) calc(100vw - 92px), 560px"
-                    />
-                  </div>
+                  <OverviewMap />
                 </div>
               </div>
               <div className="overview-readme-divider" aria-hidden="true" />
