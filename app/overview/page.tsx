@@ -29,28 +29,27 @@ export default async function OverviewPage() {
     <main>
       <Header />
       <section className="container overview-layout top-gap section-gap">
-        <aside className="profile-column">
-          <article className="profile-card">
-            <Image src={PROFILE.avatar} alt={`${PROFILE.name} profile`} className="profile-avatar" width={320} height={320} />
-            <h1>{PROFILE.name}</h1>
-            <p className="profile-handle">{PROFILE.handle}</p>
-            <p className="profile-intro">{PROFILE.intro}</p>
-            <div className="profile-meta-row">
-              <span>{posts.length} posts</span>
-              <span>Notion DB Sync</span>
+        <div className="overview-content-column">
+          <article className="overview-readme" aria-label="profile introduction">
+            <div className="readme-head-row">
+              <Image src={PROFILE.avatar} alt={`${PROFILE.name} profile`} className="profile-avatar" width={88} height={88} />
+              <div>
+                <h1>Hi there, I&apos;m {PROFILE.name} 👋</h1>
+                <p className="profile-handle">{PROFILE.handle}</p>
+              </div>
             </div>
-          </article>
-
-          <article className="overview-intro-card">
-            <h2>Overview</h2>
+            <p className="profile-intro">{PROFILE.intro}</p>
+            <ul className="readme-bullet-list">
+              <li>📝 기록 중: {posts.length}개의 글을 발행했어요.</li>
+              <li>⚙️ 작업 방식: 노션 데이터베이스를 기준으로 블로그를 동기화합니다.</li>
+              <li>🔎 관심사: Frontend DX, UI 디자인 시스템, 생산성 워크플로우.</li>
+            </ul>
             <nav className="overview-quick-nav" aria-label="overview quick links">
               <Link href="/articles">Articles</Link>
               <Link href="/collection">Collection</Link>
             </nav>
           </article>
-        </aside>
 
-        <div className="overview-content-column">
           <section className="overview-section">
             <div className="overview-section-head">
               <h2>인기 아티클</h2>
@@ -61,9 +60,12 @@ export default async function OverviewPage() {
             <div className="popular-grid">
               {popular.map((post, index) => (
                 <Link key={post.id} href={`/articles/${post.slug}` as Route} className="popular-card">
-                  <span className="popular-rank">#{index + 1}</span>
-                  <h3>{post.title}</h3>
-                  <p>{post.summary}</p>
+                  <div className="popular-preview" style={{ backgroundImage: `url(${post.coverImage ?? ""})` }} aria-hidden="true" />
+                  <div>
+                    <span className="popular-rank">#{index + 1}</span>
+                    <h3>{post.title}</h3>
+                    <p>{post.summary}</p>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -78,7 +80,7 @@ export default async function OverviewPage() {
             </div>
             <div className="list-layout">
               {recent.map((post) => (
-                <PostListItem key={post.id} post={post} />
+                <PostListItem key={post.id} post={post} withPreview />
               ))}
             </div>
           </section>
