@@ -791,12 +791,18 @@ a {
   width: 100%;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid var(--line-subtle);
+  border: 1px solid #d0d7de;
+  display: flex;
+  justify-content: center;
+}
+
+:root[data-theme="dark"] .overview-map-wrap {
+  border-color: #30363d;
 }
 
 .overview-map-banner {
   border-radius: 10px;
-  background: #f6f8fa;
+  background: var(--surface);
   padding: 12px;
 }
 
@@ -808,11 +814,11 @@ a {
 }
 
 .overview-map-frame {
-  width: 100%;
-  height: 210px;
+  width: min(100%, 720px);
+  height: auto;
   border: 0;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .overview-map-frame-dark {
@@ -1290,9 +1296,9 @@ a {
 .about-hero-card {
   padding: 26px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
   gap: 24px;
-  align-items: center;
+  align-items: stretch;
 }
 
 .about-hero-card h1 {
@@ -1333,11 +1339,13 @@ a {
   overflow: hidden;
   border: 1px solid var(--line-subtle);
   background: var(--surface);
+  min-height: 100%;
+  display: flex;
 }
 
 .about-portrait {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   object-fit: cover;
 }
@@ -1371,9 +1379,14 @@ a {
 
 .about-timeline li {
   display: grid;
-  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  grid-template-columns: minmax(130px, 170px) minmax(0, 1fr);
   gap: 12px;
   align-items: start;
+}
+
+.about-timeline-content {
+  display: grid;
+  gap: 4px;
 }
 
 .about-timeline span {
@@ -1409,7 +1422,7 @@ a {
 
 .about-project-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
 }
 
@@ -1445,6 +1458,11 @@ a {
 
   .about-profile-wrap {
     max-width: 340px;
+    min-height: 0;
+  }
+
+  .about-portrait {
+    height: auto;
   }
 
   .about-grid-section,
