@@ -1,15 +1,19 @@
 import { NotionAPI } from "notion-client";
 import { CategorySummary, PostSummary } from "@/lib/models/post";
 
-const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+type NotionBlockValue = Record<string, unknown>;
+type NotionBlockMap = Record<string, { value?: unknown }>;
+type NotionCollectionSchema = Record<string, { name?: string; type?: string }>;
+
 const notion = new NotionAPI();
+const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
 const NOTION_DATA_UNAVAILABLE_ERRORS = new Set([
   "NOTION_CONFIG_MISSING",
   "NOTION_DATABASE_ID_INVALID_FORMAT",
-  "NOTION_FETCH_FAILED",
   "NOTION_DATABASE_PAGE_NOT_FOUND",
-  "NOTION_COLLECTION_ID_NOT_FOUND"
+  "NOTION_DATABASE_UNREADABLE",
+  "NOTION_COLLECTION_NOT_FOUND"
 ]);
 
 export function isNotionDatabaseUnavailableError(error: unknown): boolean {
@@ -17,15 +21,50 @@ export function isNotionDatabaseUnavailableError(error: unknown): boolean {
 }
 
 function normalizePageId(raw: string): string {
-  const trimmed = raw.trim();
-  const idFromUrl = trimmed.match(/[a-f0-9]{32}/i)?.[0];
-  const compact = (idFromUrl ?? trimmed).replace(/-/g, "");
+  const idFromUrl = raw.trim().match(/[a-f0-9]{32}/i)?.[0];
+  const compact = (idFromUrl ?? raw.trim()).replace(/-/g, "");
 
   if (!/^[a-f0-9]{32}$/i.test(compact)) {
     throw new Error("NOTION_DATABASE_ID_INVALID_FORMAT");
   }
 
   return compact;
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : null;
+}
+
+function plainText(value: unknown): string {
+  if (!Array.isArray(value)) return "";
+
+  return value
+    .map((entry) => (Array.isArray(entry) && typeof entry[0] === "string" ? entry[0] : ""))
+    .join(" ")
+    .trim();
+}
+
+function resolvePropertyId(schema: NotionCollectionSchema, names: string[]): string | undefined {
+  const nameSet = new Set(names.map((name) => name.toLowerCase()));
+
+  for (const [propertyId, property] of Object.entries(schema)) {
+    const propertyName = (property.name ?? "").toLowerCase();
+    if (nameSet.has(propertyName)) {
+      return propertyId;
+    }
+  }
+
+  return undefined;
+}
+
+function readProperty(row: NotionBlockValue, propertyId?: string): string {
+  if (!propertyId) return "";
+  const properties = asRecord(row.properties);
+  return plainText(properties?.[propertyId]);
+}
+
+function normalizeStatus(status: string): "public" | "private" {
+  return status.trim().toLowerCase() === "private" ? "private" : "public";
 }
 
 function slugifyCategory(name: string): string {
@@ -37,146 +76,104 @@ function slugifyCategory(name: string): string {
     .replace(/-+/g, "-");
 }
 
-function toPlainText(value: unknown): string {
-  if (!Array.isArray(value)) return "";
-
-  return value
-    .map((entry) => {
-      if (!Array.isArray(entry) || entry.length === 0) return "";
-      const text = entry[0];
-      return typeof text === "string" ? text : "";
-    })
-    .join(" ")
-    .trim();
-}
-
-function extractPropertyText(pageValue: Record<string, unknown>, propertyId: string | undefined): string {
-  if (!propertyId) return "";
-  const props = pageValue.properties as Record<string, unknown> | undefined;
-  if (!props) return "";
-  return toPlainText(props[propertyId]);
-}
-
-function extractTags(raw: string): string[] {
-  if (!raw) return [];
+function parseTags(raw: string): string[] {
   return raw
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
 }
 
-function normalizeStatus(raw: string): "public" | "private" {
-  return raw.trim().toLowerCase() === "private" ? "private" : "public";
+function extractBodyFromChildren(row: NotionBlockValue, blockMap: NotionBlockMap): string {
+  const contentIds = Array.isArray(row.content) ? row.content.filter((id): id is string => typeof id === "string") : [];
+
+  return contentIds
+    .map((blockId) => {
+      const block = asRecord(blockMap[blockId]?.value);
+      const properties = asRecord(block?.properties);
+      return plainText(properties?.title);
+    })
+    .filter(Boolean)
+    .join("\n\n");
 }
 
-function resolveSchemaPropertyId(
-  schema: Record<string, { name?: string; type?: string }> | undefined,
-  candidates: string[]
-): string | undefined {
-  if (!schema) return undefined;
-
-  const lowered = candidates.map((candidate) => candidate.toLowerCase());
-
-  for (const [key, value] of Object.entries(schema)) {
-    const name = (value.name ?? "").toLowerCase();
-    if (lowered.includes(name)) return key;
-  }
-
-  return undefined;
+function mapValues<T>(source: Record<string, T> | undefined): T[] {
+  return source ? Object.values(source) : [];
 }
 
-function readBlockTitle(block: Record<string, unknown> | undefined): string {
-  if (!block) return "";
-  const props = block.properties as Record<string, unknown> | undefined;
-  return toPlainText(props?.title);
-}
-
-function extractContentFromChildren(
-  rowValue: Record<string, unknown>,
-  blockMap: Record<string, { value?: Record<string, unknown> }>
-): string {
-  const childIds = Array.isArray(rowValue.content) ? (rowValue.content as string[]) : [];
-
-  const lines = childIds
-    .map((id) => readBlockTitle(blockMap[id]?.value))
-    .filter(Boolean);
-
-  return lines.join("\n\n");
-}
-
-async function getDatabaseRecordMap() {
-  if (!notionDatabaseId) {
+async function loadDatabaseRecordMap() {
+  if (!NOTION_DATABASE_ID) {
     throw new Error("NOTION_CONFIG_MISSING");
   }
 
-  const pageId = normalizePageId(notionDatabaseId);
-  return notion.getPage(pageId);
+  const databasePageId = normalizePageId(NOTION_DATABASE_ID);
+
+  try {
+    return await notion.getPage(databasePageId);
+  } catch {
+    throw new Error("NOTION_DATABASE_UNREADABLE");
+  }
 }
 
 export async function getPosts(): Promise<PostSummary[]> {
-  const recordMap = await getDatabaseRecordMap();
+  const recordMap = await loadDatabaseRecordMap();
+  const blockMap = (recordMap.block ?? {}) as unknown as NotionBlockMap;
+  const collectionMap = (recordMap.collection ?? {}) as unknown as Record<string, { value?: unknown }>;
 
-  const blockMap = (recordMap.block ?? {}) as Record<string, { value?: Record<string, unknown> }>;
-  const collectionMap = (recordMap.collection ?? {}) as Record<string, { value?: Record<string, unknown> }>;
+  const databaseBlock = mapValues(blockMap)
+    .map((entry) => asRecord(entry.value))
+    .find((value) => value?.type === "collection_view_page" || value?.type === "collection_view");
 
-  const databasePage = Object.values(blockMap).find((entry) => {
-    const value = entry.value;
-    return value?.type === "collection_view_page" || value?.type === "collection_view";
-  })?.value;
-
-  if (!databasePage) {
+  if (!databaseBlock) {
     throw new Error("NOTION_DATABASE_PAGE_NOT_FOUND");
   }
 
-  const collectionId = databasePage.collection_id as string | undefined;
+  const collectionId = typeof databaseBlock.collection_id === "string" ? databaseBlock.collection_id : undefined;
   if (!collectionId) {
-    throw new Error("NOTION_COLLECTION_ID_NOT_FOUND");
+    throw new Error("NOTION_COLLECTION_NOT_FOUND");
   }
 
-  const collection = collectionMap[collectionId]?.value;
-  const schema = (collection?.schema ?? {}) as Record<string, { name?: string; type?: string }>;
+  const collection = asRecord(collectionMap[collectionId]?.value);
+  const schema = (asRecord(collection?.schema) ?? {}) as NotionCollectionSchema;
 
-  const titleId = resolveSchemaPropertyId(schema, ["title", "name"]);
-  const slugId = resolveSchemaPropertyId(schema, ["slug", "url"]);
-  const authorId = resolveSchemaPropertyId(schema, ["author", "writer"]);
-  const statusId = resolveSchemaPropertyId(schema, ["status", "visibility"]);
-  const dateId = resolveSchemaPropertyId(schema, ["date", "publish date", "published"]);
-  const summaryId = resolveSchemaPropertyId(schema, ["summary", "description", "excerpt"]);
-  const thumbnailId = resolveSchemaPropertyId(schema, ["thumbnail", "thumb", "cover"]);
-  const categoryId = resolveSchemaPropertyId(schema, ["category"]);
-  const tagsId = resolveSchemaPropertyId(schema, ["tags", "tag"]);
-  const updateAtId = resolveSchemaPropertyId(schema, ["updateat", "updated", "last updated", "updated at"]);
-  const contentId = resolveSchemaPropertyId(schema, ["content", "body"]);
+  const property = {
+    title: resolvePropertyId(schema, ["title", "name"]),
+    slug: resolvePropertyId(schema, ["slug", "url"]),
+    author: resolvePropertyId(schema, ["author", "writer"]),
+    status: resolvePropertyId(schema, ["status", "visibility"]),
+    date: resolvePropertyId(schema, ["date", "publish date", "published"]),
+    updateAt: resolvePropertyId(schema, ["updateat", "updated at", "updated"]),
+    summary: resolvePropertyId(schema, ["summary", "description", "excerpt"]),
+    category: resolvePropertyId(schema, ["category"]),
+    tags: resolvePropertyId(schema, ["tags", "tag"]),
+    thumbnail: resolvePropertyId(schema, ["thumbnail", "thumb", "cover"]),
+    content: resolvePropertyId(schema, ["content", "body"])
+  };
 
-  const rows = Object.values(blockMap)
-    .map((entry) => entry.value)
-    .filter((value): value is Record<string, unknown> => Boolean(value))
+  const rows = mapValues(blockMap)
+    .map((entry) => asRecord(entry.value))
+    .filter((value): value is NotionBlockValue => Boolean(value))
     .filter((value) => value.type === "page" && value.parent_id === collectionId);
 
-  const posts = rows
-    .map((rowValue) => {
-      const id = (rowValue.id as string | undefined) ?? "";
-      const title = extractPropertyText(rowValue, titleId) || "Untitled";
-      const slug = extractPropertyText(rowValue, slugId) || id;
-      const author = extractPropertyText(rowValue, authorId) || "Unknown";
-      const status = normalizeStatus(extractPropertyText(rowValue, statusId));
-      const date = extractPropertyText(rowValue, dateId) || new Date().toISOString().split("T")[0];
-      const summary = extractPropertyText(rowValue, summaryId);
-      const thumbnailFromProperty = extractPropertyText(rowValue, thumbnailId);
-      const category = extractPropertyText(rowValue, categoryId) || "Uncategorized";
-      const tags = extractTags(extractPropertyText(rowValue, tagsId));
-      const updateAt = extractPropertyText(rowValue, updateAtId) || date;
-      const blockContent = extractContentFromChildren(rowValue, blockMap);
-      const propertyContent = extractPropertyText(rowValue, contentId);
-      const content = propertyContent || blockContent || summary;
+  return rows
+    .map((row) => {
+      const id = typeof row.id === "string" ? row.id : "";
+      const title = readProperty(row, property.title) || "Untitled";
+      const slug = readProperty(row, property.slug) || id;
+      const author = readProperty(row, property.author) || "Unknown";
+      const status = normalizeStatus(readProperty(row, property.status));
+      const date = readProperty(row, property.date) || new Date().toISOString().split("T")[0];
+      const updateAt = readProperty(row, property.updateAt) || date;
+      const summary = readProperty(row, property.summary);
+      const category = readProperty(row, property.category) || "Uncategorized";
+      const tags = parseTags(readProperty(row, property.tags));
+      const bodyFromProperty = readProperty(row, property.content);
+      const bodyFromChildren = extractBodyFromChildren(row, blockMap);
+      const content = bodyFromProperty || bodyFromChildren || summary;
 
-      const format = (rowValue.format ?? {}) as Record<string, unknown>;
-      const thumbnailFromFormat =
-        typeof format.page_cover === "string"
-          ? (format.page_cover as string)
-          : typeof format.display_source === "string"
-            ? (format.display_source as string)
-            : undefined;
+      const format = asRecord(row.format) ?? {};
+      const pageCover = typeof format.page_cover === "string" ? format.page_cover : undefined;
+      const displaySource = typeof format.display_source === "string" ? format.display_source : undefined;
+      const thumbnail = readProperty(row, property.thumbnail) || pageCover || displaySource;
 
       return {
         id,
@@ -187,16 +184,15 @@ export async function getPosts(): Promise<PostSummary[]> {
         date,
         updateAt,
         summary,
-        category,
         tags,
+        category,
         readingMinutes: Math.max(3, Math.ceil(content.length / 220)),
-        thumbnail: thumbnailFromProperty || thumbnailFromFormat,
+        thumbnail,
         content
       } satisfies PostSummary;
     })
-    .filter((post) => Boolean(post.id) && post.status === "public");
-
-  return posts.sort((a, b) => +new Date(b.date) - +new Date(a.date));
+    .filter((post) => Boolean(post.id) && post.status === "public")
+    .sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }
 
 export async function getPostBySlug(slug: string): Promise<PostSummary | null> {
@@ -206,16 +202,16 @@ export async function getPostBySlug(slug: string): Promise<PostSummary | null> {
 
 export async function getCategorySummaries(): Promise<CategorySummary[]> {
   const posts = await getPosts();
-  const categoryMap = posts.reduce<Map<string, number>>((acc, post) => {
+  const counters = posts.reduce<Map<string, number>>((acc, post) => {
     acc.set(post.category, (acc.get(post.category) ?? 0) + 1);
     return acc;
   }, new Map());
 
-  return [...categoryMap.entries()]
+  return [...counters.entries()]
     .map(([name, count]) => ({
       name,
-      count,
       slug: slugifyCategory(name),
+      count,
       description: `${name} 주제의 아티클 ${count}개`
     }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
