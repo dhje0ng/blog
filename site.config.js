@@ -1,3 +1,9 @@
+const notionPageId = process.env.NOTION_PAGE_ID ?? "";
+
+if (!notionPageId) {
+  throw new Error("NOTION_PAGE_ID is required for production deployment");
+}
+
 const siteConfig = {
   blog: {
     title: "N-Blog",
@@ -17,7 +23,7 @@ const siteConfig = {
     email: "mailto:dhje0ng@gmail.com"
   },
   notion: {
-    notion_page_id: process.env.NOTION_PAGE_ID ?? process.env.NOTION_DATABASE_ID ?? ""
+    notion_page_id: notionPageId
   }
 };
 
