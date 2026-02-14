@@ -649,8 +649,9 @@ a {
 }
 
 .overview-readme {
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--line-subtle);
+  padding: 16px 18px;
+  border: 1px solid var(--line-subtle);
+  border-radius: 10px;
 }
 
 .profile-name {
