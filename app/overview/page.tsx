@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { ActivityHistorySection } from "@/app/overview/ActivityHistorySection";
+import { OverviewMap } from "@/app/overview/OverviewMap";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
@@ -178,12 +179,7 @@ export default async function OverviewPage() {
               <div className="overview-map-banner">
                 <p>Located in Seoul, South Korea</p>
                 <div className="overview-map-wrap">
-                  <iframe
-                    title="Map focused on Seoul"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=126.8390%2C37.4917%2C127.1170%2C37.6487&layer=mapnik&marker=37.5665%2C126.9780"
-                    className="overview-map-frame"
-                    loading="lazy"
-                  />
+                  <OverviewMap />
                 </div>
               </div>
               <div className="overview-readme-divider" aria-hidden="true" />
