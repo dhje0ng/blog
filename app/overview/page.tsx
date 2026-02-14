@@ -182,9 +182,7 @@ export default async function OverviewPage() {
               <div className="overview-readme-divider" aria-hidden="true" />
               <h2>Hi there, I&apos;m {siteConfig.profile.name} 👋</h2>
               <ul className="readme-bullet-list">
-                <li>📝 기록 중: {posts.length}개의 글을 발행했어요.</li>
-                <li>⚙️ 작업 방식: 노션 데이터베이스를 기준으로 블로그를 동기화합니다.</li>
-                <li>🔎 관심사: Frontend DX, UI 디자인 시스템, 생산성 워크플로우.</li>
+                <li>📝 전체 게시글: {posts.length}개의 글을 발행했어요.</li>
               </ul>
               <div className="overview-readme-divider" aria-hidden="true" />
               <ul className="readme-history-list">
