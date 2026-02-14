@@ -744,9 +744,6 @@ a {
   width: fit-content;
   max-width: 100%;
   margin: 0 auto;
-  border-radius: 10px;
-  background: var(--surface);
-  padding: 12px;
 }
 
 .overview-map-banner p {
@@ -759,12 +756,13 @@ a {
 .overview-map-note {
   border: 1px solid var(--line-subtle);
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--surface);
   padding: 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 8px;
+  min-height: 220px;
 }
 
 .overview-map-note h3 {
