@@ -33,12 +33,13 @@ export default function AboutPage() {
             <p className="eyebrow">About</p>
             <h1>{siteConfig.profile.name}</h1>
             <p className="about-hero-copy">
-              {siteConfig.profile.intro}로 활동하며 보안/개발 사이의 간극을 줄이는 실용적인 아키텍처를 설계합니다. 운영 가능한 자동화와
-              이해하기 쉬운 문서를 함께 만드는 것을 중요하게 생각합니다.
+              Hi, I’m a cybersecurity researcher from the Republic of Korea. 🇰🇷👋 <br>
+              Most of my work centers around automotive cybersecurity, protecting vehicles from potential attacks. I’m also passionate about finding and fixing software vulnerabilities through bug hunting. ✅ <br>
+              Always curious, I love learning from every challenge I face 😄
             </p>
             <div className="about-hero-actions">
               <Link href="/articles" className="about-action-primary">
-                아티클 보러가기
+                View Articles
               </Link>
               <a href={siteConfig.social.linkedin} target="_blank" rel="noreferrer" className="about-action-secondary">
                 LinkedIn
@@ -52,11 +53,12 @@ export default function AboutPage() {
 
         <section className="about-grid-section">
           <article className="about-panel">
-            <h2>Experience Snapshot</h2>
+            <h2>Education</h2>
             <ul className="about-timeline">
               <li>
-                <span>2025</span>
-                <p>개인 기술 블로그 정보 구조 리뉴얼 및 검색 경험 개선</p>
+                <span>Mar 2018 ~ Feb 2022</span>
+                <p>Yeungnam University Collage</p>
+                <p><small>Graduated from the Depts, Cybersecurity</small></p>
               </li>
               <li>
                 <span>2024</span>
