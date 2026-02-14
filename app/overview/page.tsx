@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { ActivityHistorySection } from "@/app/overview/ActivityHistorySection";
-import { OverviewMap } from "@/app/overview/OverviewMap";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
@@ -176,13 +175,6 @@ export default async function OverviewPage() {
 
           <div className="overview-content-column">
             <article className="overview-readme" aria-label="profile introduction">
-              <div className="overview-map-banner">
-                <p>Located in Seoul, South Korea</p>
-                <div className="overview-map-wrap">
-                  <OverviewMap />
-                </div>
-              </div>
-              <div className="overview-readme-divider" aria-hidden="true" />
               <h2>Hi there, I&apos;m {siteConfig.profile.name} 👋</h2>
               <ul className="readme-bullet-list">
                 <li>📝 전체 게시글: {posts.length}개의 글을 발행했어요.</li>
