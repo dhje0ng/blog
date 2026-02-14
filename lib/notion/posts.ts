@@ -60,6 +60,26 @@ function richTextToPlainText(value: RichTextItemResponse[]): string {
   return value.map((item) => item.plain_text).join("").trim();
 }
 
+function richTextToMarkdown(value: RichTextItemResponse[]): string {
+  return value
+    .map((item) => {
+      const text = item.plain_text;
+      if (!text) return "";
+
+      const href = item.href ?? (item.type === "text" ? item.text.link?.url : undefined);
+      let decorated = href ? `[${text}](${href})` : text;
+
+      if (item.annotations.code) decorated = `\`${decorated}\``;
+      if (item.annotations.bold) decorated = `**${decorated}**`;
+      if (item.annotations.italic) decorated = `*${decorated}*`;
+      if (item.annotations.strikethrough) decorated = `~~${decorated}~~`;
+
+      return decorated;
+    })
+    .join("")
+    .trim();
+}
+
 function isFullDatabase(result: DatabaseObjectResponse | PartialDatabaseObjectResponse): result is DatabaseObjectResponse {
   return "title" in result;
 }
@@ -152,38 +172,82 @@ function isBlockObject(block: BlockObjectResponse | PartialBlockObjectResponse):
   return "type" in block;
 }
 
-function blockToMarkdownLine(block: BlockObjectResponse): string | null {
+function blockToMarkdownLines(block: BlockObjectResponse, depth = 0): string[] {
+  const indent = "  ".repeat(depth);
+
   if (block.type === "paragraph") {
-    return richTextToPlainText(block.paragraph.rich_text);
+    const text = richTextToMarkdown(block.paragraph.rich_text);
+    return text ? [text] : [];
   }
 
-  if (block.type === "heading_1") return `# ${richTextToPlainText(block.heading_1.rich_text)}`;
-  if (block.type === "heading_2") return `## ${richTextToPlainText(block.heading_2.rich_text)}`;
-  if (block.type === "heading_3") return `### ${richTextToPlainText(block.heading_3.rich_text)}`;
+  if (block.type === "heading_1") return [`# ${richTextToMarkdown(block.heading_1.rich_text)}`];
+  if (block.type === "heading_2") return [`## ${richTextToMarkdown(block.heading_2.rich_text)}`];
+  if (block.type === "heading_3") return [`### ${richTextToMarkdown(block.heading_3.rich_text)}`];
+  if (block.type === "bulleted_list_item") return [`${indent}- ${richTextToMarkdown(block.bulleted_list_item.rich_text)}`];
+  if (block.type === "numbered_list_item") return [`${indent}1. ${richTextToMarkdown(block.numbered_list_item.rich_text)}`];
+  if (block.type === "quote") return [`> ${richTextToMarkdown(block.quote.rich_text)}`];
+  if (block.type === "callout") return [`> ${richTextToMarkdown(block.callout.rich_text)}`];
+  if (block.type === "code") return ["```", block.code.rich_text.map((text) => text.plain_text).join(""), "```"];
+  if (block.type === "to_do") {
+    const prefix = block.to_do.checked ? "[x]" : "[ ]";
+    return [`${indent}- ${prefix} ${richTextToMarkdown(block.to_do.rich_text)}`];
+  }
+  if (block.type === "toggle") {
+    const text = richTextToMarkdown(block.toggle.rich_text);
+    return text ? [`${indent}- ${text}`] : [];
+  }
+  if (block.type === "divider") return ["---"];
+  if (block.type === "bookmark") return block.bookmark.url ? [`[${block.bookmark.url}](${block.bookmark.url})`] : [];
+  if (block.type === "embed") return block.embed.url ? [`[${block.embed.url}](${block.embed.url})`] : [];
+  if (block.type === "link_preview") return block.link_preview.url ? [`[${block.link_preview.url}](${block.link_preview.url})`] : [];
+  if (block.type === "image") {
+    const src = "external" in block.image ? block.image.external.url : block.image.file.url;
+    const caption = richTextToMarkdown(block.image.caption) || "image";
+    return src ? [`![${caption}](${src})`] : [];
+  }
 
-  return null;
+  return [];
 }
 
-async function loadPageContent(pageId: string): Promise<string> {
+async function loadBlockChildren(blockId: string): Promise<BlockObjectResponse[]> {
   const notion = getNotionClient();
-  const lines: string[] = [];
+  const blocks: BlockObjectResponse[] = [];
   let cursor: string | undefined;
 
   do {
     const response = await notion.blocks.children.list({
-      block_id: pageId,
+      block_id: blockId,
       start_cursor: cursor,
       page_size: 100
     });
 
     response.results.filter(isBlockObject).forEach((block) => {
-      const line = blockToMarkdownLine(block);
-      if (line) lines.push(line);
+      blocks.push(block);
     });
 
     cursor = response.has_more ? response.next_cursor ?? undefined : undefined;
   } while (cursor);
 
+  return blocks;
+}
+
+async function blocksToMarkdownLines(blocks: BlockObjectResponse[], depth = 0): Promise<string[]> {
+  const lines: string[] = [];
+
+  for (const block of blocks) {
+    lines.push(...blockToMarkdownLines(block, depth));
+
+    if (block.has_children) {
+      const childBlocks = await loadBlockChildren(block.id);
+      lines.push(...(await blocksToMarkdownLines(childBlocks, depth + 1)));
+    }
+  }
+
+  return lines;
+}
+
+async function loadPageContent(pageId: string): Promise<string> {
+  const lines = await blocksToMarkdownLines(await loadBlockChildren(pageId));
   return lines.filter(Boolean).join("\n\n");
 }
 
