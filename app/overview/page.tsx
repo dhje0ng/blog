@@ -23,6 +23,12 @@ export default async function OverviewPage() {
   const popular = posts.filter((post) => isPinnedPost(post.tags));
   const recent = posts;
   const collectionCount = new Set(posts.map((post) => post.category)).size;
+  const socialIconMap: Record<string, string> = {
+    github: "🐙",
+    linkedin: "💼",
+    x: "✖️",
+    email: "✉️"
+  };
   const socialLinks = Object.entries(siteConfig.social).filter(([, href]) => Boolean(href));
 
   return (
@@ -36,18 +42,19 @@ export default async function OverviewPage() {
               <div>
                 <h1 className="profile-name">{siteConfig.profile.name}</h1>
                 <p className="profile-handle">{siteConfig.profile.handle}</p>
+                <ul className="profile-social-links" aria-label="social links">
+                  {socialLinks.map(([name, href]) => (
+                    <li key={name}>
+                      <a href={href} target="_blank" rel="noreferrer" aria-label={name}>
+                        <span aria-hidden="true">{socialIconMap[name] ?? "🔗"}</span>
+                        <span className="sr-only">{name}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
             <p className="profile-intro">{siteConfig.profile.intro}</p>
-            <ul className="readme-bullet-list" aria-label="social links">
-              {socialLinks.map(([name, href]) => (
-                <li key={name}>
-                  <a href={href} target="_blank" rel="noreferrer">
-                    {name}
-                  </a>
-                </li>
-              ))}
-            </ul>
           </aside>
 
           <div className="overview-content-column">

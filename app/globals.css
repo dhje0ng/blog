@@ -594,6 +594,42 @@ a {
   margin-top: 12px;
 }
 
+.profile-social-links {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-social-links a {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-subtle);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  font-size: 14px;
+}
+
+.profile-social-links a:hover {
+  border-color: var(--line-default);
+  transform: translateY(-1px);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 .readme-bullet-list {
   margin: 14px 0 0;
   padding-left: 18px;
@@ -761,27 +797,17 @@ a {
 
 
 .articles-search {
-  display: flex;
-  gap: 8px;
+  display: block;
   margin-bottom: 12px;
 }
 
 .articles-search input {
-  flex: 1;
+  width: 100%;
   min-width: 0;
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 12px;
   font: inherit;
-}
-
-.articles-search button {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #fff;
-  padding: 10px 14px;
-  font: inherit;
-  cursor: pointer;
 }
 
 .search-result-meta {
