@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
+import { ActivityHistorySection } from "@/app/overview/ActivityHistorySection";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
@@ -116,26 +117,6 @@ function getYearActivity(posts: PostSummary[], year: number): { cells: ActivityC
   return { cells, monthLabels };
 }
 
-function getActivityLevel(count: number): 0 | 1 | 2 | 3 | 4 {
-  if (count === 0) {
-    return 0;
-  }
-
-  if (count === 1) {
-    return 1;
-  }
-
-  if (count === 2) {
-    return 2;
-  }
-
-  if (count <= 4) {
-    return 3;
-  }
-
-  return 4;
-}
-
 export default async function OverviewPage() {
   const posts = await getPostsOrNull();
 
@@ -146,9 +127,15 @@ export default async function OverviewPage() {
   const popular = posts.filter((post) => isPinnedPost(post.tags));
   const recent = posts;
   const currentYear = new Date().getFullYear();
-  const { cells: activityCells, monthLabels } = getYearActivity(posts, currentYear);
-  const activeDaysCount = activityCells.filter((cell) => cell.count > 0).length;
-  const yearActivities = activityCells.reduce((sum, cell) => sum + cell.count, 0);
+  const activityYears = [currentYear, currentYear - 1, currentYear - 2].map((year) => {
+    const { cells, monthLabels } = getYearActivity(posts, year);
+
+    return {
+      year,
+      cells,
+      monthLabels
+    };
+  });
   const socialLinks = Object.entries(siteConfig.social).filter(([, href]) => Boolean(href));
 
   return (
@@ -181,46 +168,29 @@ export default async function OverviewPage() {
 
           <div className="overview-content-column">
             <article className="overview-readme" aria-label="profile introduction">
+              <div className="overview-map-wrap">
+                <iframe
+                  title="Seoul location map"
+                  src="https://www.google.com/maps?q=Seoul&output=embed"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+              <div className="overview-readme-divider" aria-hidden="true" />
               <h2>Hi there, I&apos;m {siteConfig.profile.name} 👋</h2>
               <ul className="readme-bullet-list">
                 <li>📝 기록 중: {posts.length}개의 글을 발행했어요.</li>
                 <li>⚙️ 작업 방식: 노션 데이터베이스를 기준으로 블로그를 동기화합니다.</li>
                 <li>🔎 관심사: Frontend DX, UI 디자인 시스템, 생산성 워크플로우.</li>
               </ul>
+              <div className="overview-readme-divider" aria-hidden="true" />
+              <ul className="readme-history-list">
+                <li>2025 · 기술 블로그 구조 개선 및 검색 경험 고도화</li>
+                <li>2024 · 콘텐츠 운영 자동화를 위한 노션 연동 파이프라인 구축</li>
+              </ul>
             </article>
 
-            <section className="overview-section" aria-label="posting activity">
-              <div className="overview-section-head">
-                <h2>활동 이력</h2>
-                <span className="section-more-link">{currentYear}년 · 활동일 {activeDaysCount}일</span>
-              </div>
-              <div className="activity-history-wrap">
-                <div className="activity-month-labels" aria-hidden="true">
-                  {monthLabels.map((label) => (
-                    <span key={label.month} style={{ gridColumn: `${label.column + 1}` }}>
-                      {label.month}
-                    </span>
-                  ))}
-                </div>
-                <div className="activity-history-grid" role="img" aria-label={`${currentYear}년 게시글 업로드 활동 이력`}>
-                  {activityCells.map((cell) => {
-                    const level = getActivityLevel(cell.count);
-
-                    return <span key={cell.dateKey} className={`activity-cell level-${level}`} title={`${cell.dateKey} · ${cell.count} activities`} />;
-                  })}
-                </div>
-                <div className="activity-history-footer">
-                  <span>{yearActivities} activities in {currentYear}</span>
-                  <div className="activity-legend" aria-label="활동 강도 색상 단계">
-                    <span>Less</span>
-                    {[0, 1, 2, 3, 4].map((level) => (
-                      <span key={level} className={`activity-cell level-${level}`} aria-hidden="true" />
-                    ))}
-                    <span>More</span>
-                  </div>
-                </div>
-              </div>
-            </section>
+            <ActivityHistorySection years={activityYears} />
 
             <section className="overview-section">
               <div className="overview-section-head">

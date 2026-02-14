@@ -689,6 +689,27 @@ a {
   padding: 18px;
 }
 
+.overview-map-wrap {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line-subtle);
+}
+
+.overview-map-wrap iframe {
+  width: 100%;
+  height: 210px;
+  border: 0;
+  display: block;
+}
+
+.overview-readme-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--line-subtle);
+  margin: 16px 0;
+}
+
 .profile-name {
   margin: 0;
   font-size: 1.03rem;
@@ -773,6 +794,50 @@ a {
   font-size: 14px;
   display: grid;
   gap: 6px;
+}
+
+.readme-history-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--text);
+  display: grid;
+  gap: 6px;
+}
+
+.activity-head-with-toggle {
+  gap: 14px;
+}
+
+.activity-year-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line-subtle);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+  background: var(--bg);
+}
+
+.activity-year-toggle button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.activity-year-toggle button.active {
+  background: var(--line-subtle);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.activity-summary-text {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--muted);
 }
 
 
