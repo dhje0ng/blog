@@ -172,8 +172,8 @@ export default async function OverviewPage() {
                 <p>Located in Seoul, South Korea</p>
                 <div className="overview-map-wrap">
                   <Image
-                    src="https://maps.googleapis.com/maps/api/staticmap?center=Seoul,South+Korea&zoom=11&size=1200x600&scale=2&maptype=roadmap&markers=color:red%7CSeoul,South+Korea"
-                    alt="Static Google map focused on Seoul"
+                    src="https://staticmap.openstreetmap.de/staticmap.php?center=37.5665,126.9780&zoom=11&size=1200x600&markers=37.5665,126.9780,red-pushpin"
+                    alt="Static map focused on Seoul"
                     width={1200}
                     height={600}
                     unoptimized

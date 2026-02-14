@@ -12,7 +12,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "maps.googleapis.com"
+        hostname: "staticmap.openstreetmap.de"
       }
     ]
   }
