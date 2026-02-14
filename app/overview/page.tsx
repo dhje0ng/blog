@@ -178,12 +178,8 @@ export default async function OverviewPage() {
               <div className="overview-map-banner">
                 <p>Located in Seoul, South Korea</p>
                 <div className="overview-map-wrap">
-                  <iframe
-                    title="Map focused on Seoul"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=126.8390%2C37.4917%2C127.1170%2C37.6487&layer=mapnik&marker=37.5665%2C126.9780"
-                    className="overview-map-frame"
-                    loading="lazy"
-                  />
+                  <Image src="/map_light.png" alt="Seoul map (light theme)" className="overview-map-frame overview-map-frame-light" width={960} height={420} priority={false} unoptimized />
+                  <Image src="/map_dark.png" alt="Seoul map (dark theme)" className="overview-map-frame overview-map-frame-dark" width={960} height={420} priority={false} unoptimized />
                 </div>
               </div>
               <div className="overview-readme-divider" aria-hidden="true" />
