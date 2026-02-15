@@ -5,23 +5,13 @@ import siteConfig from "@/site.config";
 
 const featuredProjects = [
   {
-    title: "Threat Intelligence Dashboard",
-    description: "침해 지표를 수집/정규화해 보안 운영팀이 실시간으로 위협 레벨을 파악할 수 있는 내부 대시보드.",
+    title: "How to USB Fuzzing in vehicles to discover the real world vulnerability",
+    description: "",
     stack: ["Next.js", "TypeScript", "Elasticsearch"]
   },
-  {
-    title: "Notion Publishing Pipeline",
-    description: "노션 문서를 콘텐츠로 자동 배포하고 메타데이터/검색 인덱스를 동기화하는 퍼블리싱 파이프라인.",
-    stack: ["Node.js", "Notion API", "Vercel"]
-  },
-  {
-    title: "Incident Response Playbook",
-    description: "침해 사고 대응 절차를 템플릿화해 탐지-분석-조치 단계를 빠르게 실행할 수 있도록 만든 플레이북 세트.",
-    stack: ["SIEM", "Automation", "Docs"]
-  }
 ];
 
-const capabilities = ["Cloud Security", "Threat Hunting", "Application Security", "Automation", "Incident Response", "Technical Writing"];
+const capabilities = ["Penetration Testing", "Vulnerability Research"];
 
 export default function AboutPage() {
   return (
@@ -80,7 +70,7 @@ export default function AboutPage() {
               <li>
                 <span>Jan 2025 ~ Present</span>
                 <div className="about-timeline-content">
-                  <p>GOC/GCC (Ground Operations Command), ROK</p>
+                  <p>ROK GOC/GCC (Ground Operations Command)</p>
                   <p><small>Security Analyst (Malware, Vulnerability)</small></p>
                 </div>
               </li>
@@ -106,8 +96,7 @@ export default function AboutPage() {
 
         <section className="about-panel">
           <div className="section-title-row">
-            <h2>Featured Work</h2>
-            <p>최근 집중하고 있는 작업들</p>
+            <h2>Talk/Speaker</h2>
           </div>
           <div className="about-project-grid">
             {featuredProjects.map((project) => (
