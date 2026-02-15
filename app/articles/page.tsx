@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { ArticlesSearchClient } from "@/app/articles/ArticlesSearchClient";
 import { Header } from "@/components/layout/Header";
 import { getPostsOrNull } from "@/lib/notion/safe";
@@ -21,7 +20,21 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const posts = await getPostsOrNull();
 
   if (!posts) {
-    notFound();
+    return (
+      <main>
+        <Header />
+        <section className="container section-gap top-gap mobile-viewer-page">
+          <div className="section-title-row">
+            <h1>Articles</h1>
+            <p>전체 게시글 목록입니다.</p>
+          </div>
+
+          <div className="list-layout" role="status" aria-live="polite">
+            <p>Data could not be updated due to an API error.</p>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   const query = q?.trim() ?? "";
