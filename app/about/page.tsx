@@ -14,22 +14,21 @@ const featuredProjects = [
 
 const disclosureVulnerabilities = [
   {
-    cveId: "CVE-2024-12345",
-    description: "Improper input validation in the telematics update workflow allowed a remote attacker to trigger unintended command execution.",
-    target: "Automotive OEM (Global)",
+    cveId: "CVE-2023-39076",
+    description: "Discovered a DoS vulnerability in the GM Equinox infotainment system triggered by malformed USB data input.",
+    target: "General Motors (Automotive OEM)",
     references: [
-      "https://nvd.nist.gov/vuln/detail/CVE-2024-12345",
-      "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-12345"
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-39076",
     ]
   },
   {
-    cveId: "CVE-2023-45678",
-    description: "Insecure session handling in a companion vehicle service exposed sensitive account tokens to authenticated users.",
-    target: "Automotive OEM (APAC)",
+    cveId: "CVE-2023-39075",
+    description: "Discovered a DoS vulnerability in the Renault ZOE infotainment system triggered by malformed USB data input.",
+    target: "Renault (Automotive OEM)",
     references: [
-      "https://nvd.nist.gov/vuln/detail/CVE-2023-45678"
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-39075"
     ]
-  }
+  },
 ];
 
 const featuredCompetitions = [
