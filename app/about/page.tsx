@@ -14,12 +14,54 @@ const featuredProjects = [
 
 const featuredCompetitions = [
   {
-    title: "Your Competition Title",
-    date: "YYYY.MM.DD",
-    result: "1st Place",
+    title: "Automotive CTF 2024",
+    date: "Oct 21 2024",
+    result: "3rd place (Team. JJJJJ)",
     location: "Detroit, USA",
-    organizer: "Blockharbor Cybersecurity"
-  }
+    organizer: "Vicone & Blockharbor Cybersecurity"
+  },
+  {
+    title: "Car Hacking Village CTF 2024",
+    date: "Aug 09, 2024",
+    result: "4rd place (Team. AUTOCRYPT)",
+    location: "Las Vegas, USA",
+    organizer: "Car Hacking Village, Defcon"
+  },
+  {
+    title: "Car Hacking Village CTF 2023",
+    date: "Aug 09, 2023",
+    result: "4rd place (Team. AUTOCRYPT)",
+    location: "Las Vegas, USA",
+    organizer: "Car Hacking Village, Defcon"
+  },
+  {
+    title: "Car Hacking Village CTF 2022",
+    date: "Aug 09, 2023",
+    result: "5rd place (Team. AUTOCRYPT)",
+    location: "Las Vegas, USA",
+    organizer: "Car Hacking Village, Defcon"
+  },
+  {
+    title: "Cyber Security Challenge",
+    date: "Aug ~ Nov 2021",
+    result: "1st place (Team. AUTOCRYPT)",
+    location: "Seoul, South Korea",
+    organizer: "Ministry of Science and ICT"
+  },
+  {
+    title: "KOSPO Web Service Security Competition",
+    date: "Aug 2021",
+    result: "Honorable Mention (Team. 고점에사람있어요)",
+    location: "Seoul, South Korea",
+    organizer: "KOSPO"
+  },
+  {
+    title: "Y-CTF 2018",
+    date: "Nov 2021",
+    result: "1st place (Team. 김봉혁의 빠루교실)",
+    location: "Seoul, South Korea",
+    organizer: "Yeungnam University Collage"
+  },
 ];
 
 const capabilities = ["Penetration Testing", "Vulnerability Research"];
