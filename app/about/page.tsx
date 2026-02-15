@@ -7,8 +7,8 @@ const featuredProjects = [
   {
     title: "How to USB Fuzzing in vehicles to discover the real world vulnerability",
     description: "",
-    publishedDate: "2024-10-12",
-    references: ["Automotive Cybersecurity Conference 2024 Proceedings"]
+    publishedDate: "Aug 09, 2023",
+    references: ["DEFCON 31 Car Hacking Village"]
   },
 ];
 
