@@ -12,6 +12,16 @@ const featuredProjects = [
   },
 ];
 
+const featuredCompetitions = [
+  {
+    title: "Your Competition Title",
+    date: "YYYY.MM.DD",
+    result: "1st Place",
+    location: "Detroit, USA",
+    organizer: "Blockharbor Cybersecurity"
+  }
+];
+
 const capabilities = ["Penetration Testing", "Vulnerability Research"];
 
 export default function AboutPage() {
@@ -101,7 +111,7 @@ export default function AboutPage() {
           </div>
           <div className="about-project-grid">
             {featuredProjects.map((project) => (
-              <article key={project.title} className="about-project-card">
+              <article key={project.title} className="about-project-card about-talk-card">
                 <h3>{project.title}</h3>
                 <p>{project.description}</p>
                 <div className="about-project-meta">
@@ -111,12 +121,39 @@ export default function AboutPage() {
                   </p>
                   <p>
                     <strong>References</strong>
+                    <span>{project.references.join(", ")}</span>
                   </p>
-                  <ul className="about-reference-list">
-                    {project.references.map((reference) => (
-                      <li key={reference}>{reference}</li>
-                    ))}
-                  </ul>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="about-panel">
+          <div className="section-title-row">
+            <h2>Competition</h2>
+          </div>
+          <div className="about-project-grid">
+            {featuredCompetitions.map((competition) => (
+              <article key={competition.title} className="about-project-card about-competition-card">
+                <h3>{competition.title}</h3>
+                <div className="about-project-meta">
+                  <p>
+                    <strong>Date</strong>
+                    <span>{competition.date}</span>
+                  </p>
+                  <p>
+                    <strong>Result</strong>
+                    <span>{competition.result}</span>
+                  </p>
+                  <p>
+                    <strong>Location</strong>
+                    <span>{competition.location}</span>
+                  </p>
+                  <p>
+                    <strong>Organizer</strong>
+                    <span>{competition.organizer}</span>
+                  </p>
                 </div>
               </article>
             ))}

@@ -1313,6 +1313,19 @@ a {
   line-height: 1.6;
 }
 
+.about-talk-card {
+  background: var(--bg);
+}
+
+
+.about-competition-card {
+  background: var(--bg);
+}
+
+.about-competition-card h3 {
+  margin: 0 0 14px;
+}
+
 .about-project-meta {
   display: grid;
   gap: 8px;
