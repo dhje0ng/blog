@@ -16,7 +16,7 @@ const disclosureVulnerabilities = [
   {
     cveId: "CVE-2023-39076",
     description: "Discovered a DoS vulnerability in the GM Equinox infotainment system triggered by malformed USB data input.",
-    target: "General Motors (Automotive OEM)",
+    target: "General Motors",
     references: [
       "https://nvd.nist.gov/vuln/detail/CVE-2023-39076",
     ]
@@ -24,7 +24,7 @@ const disclosureVulnerabilities = [
   {
     cveId: "CVE-2023-39075",
     description: "Discovered a DoS vulnerability in the Renault ZOE infotainment system triggered by malformed USB data input.",
-    target: "Renault (Automotive OEM)",
+    target: "Renault Group",
     references: [
       "https://nvd.nist.gov/vuln/detail/CVE-2023-39075"
     ]
