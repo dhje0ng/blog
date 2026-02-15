@@ -139,7 +139,7 @@ export default function AboutPage() {
           </div>
           <div className="about-project-grid">
             {featuredCompetitions.map((competition) => (
-              <article key={competition.title} className="about-project-card">
+              <article key={competition.title} className="about-project-card about-competition-card">
                 <h3>{competition.title}</h3>
                 <div className="about-project-meta">
                   <p>
