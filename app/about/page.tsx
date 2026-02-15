@@ -7,7 +7,8 @@ const featuredProjects = [
   {
     title: "How to USB Fuzzing in vehicles to discover the real world vulnerability",
     description: "",
-    stack: ["Next.js", "TypeScript", "Elasticsearch"]
+    publishedDate: "2024-10-12",
+    references: ["Automotive Cybersecurity Conference 2024 Proceedings"]
   },
 ];
 
@@ -103,10 +104,19 @@ export default function AboutPage() {
               <article key={project.title} className="about-project-card">
                 <h3>{project.title}</h3>
                 <p>{project.description}</p>
-                <div className="about-stack-list">
-                  {project.stack.map((item) => (
-                    <span key={item}>{item}</span>
-                  ))}
+                <div className="about-project-meta">
+                  <p>
+                    <strong>Published Date</strong>
+                    <span>{project.publishedDate}</span>
+                  </p>
+                  <p>
+                    <strong>References</strong>
+                  </p>
+                  <ul className="about-reference-list">
+                    {project.references.map((reference) => (
+                      <li key={reference}>{reference}</li>
+                    ))}
+                  </ul>
                 </div>
               </article>
             ))}
