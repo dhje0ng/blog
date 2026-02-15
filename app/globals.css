@@ -1279,7 +1279,7 @@ a {
 }
 
 .about-skill-cloud span,
-.about-stack-list span {
+.about-project-meta strong {
   border: 1px solid var(--line-subtle);
   border-radius: 999px;
   padding: 5px 10px;
@@ -1313,10 +1313,33 @@ a {
   line-height: 1.6;
 }
 
-.about-stack-list {
+.about-project-meta {
+  display: grid;
+  gap: 8px;
+}
+
+.about-project-meta p {
+  margin: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+}
+
+.about-project-meta strong {
+  font-weight: 600;
+}
+
+.about-project-meta span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.about-reference-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 @media (max-width: 1024px) {
