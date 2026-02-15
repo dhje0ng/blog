@@ -6,7 +6,7 @@ import siteConfig from "@/site.config";
 const featuredProjects = [
   {
     title: "How to USB Fuzzing in vehicles to discover the real world vulnerability",
-    description: "",
+    description: "Conducted USB-based fuzzing on actual vehicle systems to discover and identify security vulnerabilities",
     publishedDate: "Aug 09, 2023",
     references: ["DEFCON 31 Car Hacking Village"]
   },
