@@ -121,12 +121,8 @@ export default function AboutPage() {
                   </p>
                   <p>
                     <strong>References</strong>
+                    <span>{project.references.join(", ")}</span>
                   </p>
-                  <ul className="about-reference-list">
-                    {project.references.map((reference) => (
-                      <li key={reference}>{reference}</li>
-                    ))}
-                  </ul>
                 </div>
               </article>
             ))}
