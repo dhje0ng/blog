@@ -29,6 +29,14 @@ const disclosureVulnerabilities = [
       "https://nvd.nist.gov/vuln/detail/CVE-2023-39075"
     ]
   },
+  {
+    cveId: "CVE-2022-[REDACTED]",
+    description: "Discovered a DoS vulnerability in the BMW infotainment system triggered by malformed data input.",
+    target: "BMW Automotive",
+    references: [
+      "https://www.bmwgroup.com/en/general/Security.html"
+    ]
+  },
 ];
 
 const featuredCompetitions = [
