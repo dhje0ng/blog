@@ -181,7 +181,7 @@ export default async function OverviewPage() {
               </ul>
               <div className="overview-readme-divider" aria-hidden="true" />
               <ul className="readme-history-list">
-                <li>[TMP] · Next.JS + React + Notion 으로 만들어진 블로그에요!</li>
+                <li>Next.JS + React + Notion 으로 만들어진 블로그에요!</li>
               </ul>
             </article>
 
