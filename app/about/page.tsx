@@ -12,6 +12,26 @@ const featuredProjects = [
   },
 ];
 
+const disclosureVulnerabilities = [
+  {
+    cveId: "CVE-2024-12345",
+    description: "Improper input validation in the telematics update workflow allowed a remote attacker to trigger unintended command execution.",
+    target: "Automotive OEM (Global)",
+    references: [
+      "https://nvd.nist.gov/vuln/detail/CVE-2024-12345",
+      "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-12345"
+    ]
+  },
+  {
+    cveId: "CVE-2023-45678",
+    description: "Insecure session handling in a companion vehicle service exposed sensitive account tokens to authenticated users.",
+    target: "Automotive OEM (APAC)",
+    references: [
+      "https://nvd.nist.gov/vuln/detail/CVE-2023-45678"
+    ]
+  }
+];
+
 const featuredCompetitions = [
   {
     title: "Automotive CTF 2024",
@@ -196,6 +216,38 @@ export default function AboutPage() {
                     <strong>Organizer</strong>
                     <span>{competition.organizer}</span>
                   </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="about-panel">
+          <div className="section-title-row">
+            <h2>Disclosure Vulnerabilities</h2>
+          </div>
+          <div className="about-project-grid">
+            {disclosureVulnerabilities.map((item) => (
+              <article key={item.cveId} className="about-project-card about-disclosure-card">
+                <h3>{item.cveId}</h3>
+                <p>{item.description}</p>
+                <div className="about-project-meta">
+                  <p>
+                    <strong>Target (OEM)</strong>
+                    <span>{item.target}</span>
+                  </p>
+                  <div className="about-disclosure-references">
+                    <strong>References</strong>
+                    <ul>
+                      {item.references.map((reference) => (
+                        <li key={reference}>
+                          <a href={reference} target="_blank" rel="noreferrer">
+                            {reference}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </article>
             ))}
