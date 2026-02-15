@@ -1318,3 +1318,173 @@ a {
   flex-wrap: wrap;
   gap: 6px;
 }
+
+@media (max-width: 1024px) {
+  .featured-card,
+  .featured-link {
+    grid-template-columns: 1fr;
+  }
+
+  .post-detail-content-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .post-toc-sidebar {
+    position: static;
+    order: -1;
+  }
+
+  .overview-layout {
+    width: min(980px, 92vw);
+  }
+
+  .overview-main-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .overview-profile-column {
+    position: static;
+  }
+
+  .overview-main-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .overview-aside {
+    position: static;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-hero-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .gh-header-inner {
+    min-height: 56px;
+    width: min(1240px, calc(100vw - 24px));
+  }
+
+  .gh-header-tools {
+    gap: 8px;
+  }
+
+  .gh-share-feedback {
+    right: 12px;
+    top: 60px;
+    font-size: 11px;
+  }
+
+  .hero {
+    padding-top: 44px;
+  }
+
+  .section-gap {
+    padding: 16px 0 36px;
+  }
+
+  .top-gap {
+    padding-top: 34px;
+  }
+
+  .section-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .category-grid,
+  .overview-archive-grid,
+  .about-grid-section {
+    grid-template-columns: 1fr;
+  }
+
+  .post-detail-wrap {
+    padding: 30px 0 52px;
+  }
+
+  .post-detail-meta {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .post-detail-cover {
+    min-height: 220px;
+  }
+
+  .post-detail-body {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .about-hero-card {
+    padding: 18px;
+    gap: 16px;
+  }
+
+  .about-panel {
+    padding: 16px;
+  }
+
+  .about-hero-actions {
+    flex-wrap: wrap;
+  }
+
+  .about-timeline li {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .popular-card,
+  .post-list-body.with-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .popular-preview,
+  .post-list-preview {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container,
+  .container-narrow,
+  .mobile-viewer-page,
+  .post-detail-content-grid,
+  .overview-layout {
+    width: calc(100vw - 24px);
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .featured-content {
+    padding: 16px;
+  }
+
+  .post-list-item,
+  .category-card {
+    padding: 14px;
+  }
+
+  .post-code-block pre {
+    padding: 12px;
+    font-size: 0.8rem;
+  }
+
+  .activity-history-wrap {
+    padding: 12px;
+  }
+
+  .error-page {
+    margin: 58px auto;
+    padding: 18px;
+  }
+}
