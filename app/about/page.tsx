@@ -74,7 +74,6 @@ export default function AboutPage() {
             </ul>
           </article>
 
-        <section className="about-grid-section">
           <article className="about-panel">
             <h2>Work Experience</h2>
             <ul className="about-timeline">
