@@ -78,17 +78,17 @@ export default function AboutPage() {
             <h2>Work Experience</h2>
             <ul className="about-timeline">
               <li>
-                <span>Mar 2018 ~ Feb 2022</span>
+                <span>Jan 2025 ~ Present</span>
                 <div className="about-timeline-content">
-                  <p>Yeungnam University Collage</p>
-                  <p><small>Graduated from the Depts, Cybersecurity</small></p>
+                  <p>GOC/GCC (Ground Operations Command), ROK</p>
+                  <p><small>Security Analyst (Malware, Vulnerability)</small></p>
                 </div>
               </li>
               <li>
-                <span>July 2020 - Mar 2021</span>
+                <span>Jun 2021 - Dec 2024</span>
                 <div className="about-timeline-content">
-                  <p>Best of the Best, KITRI</p>
-                  <p><small>Completed the Security Development Track</small></p>
+                  <p>Autocrypt, Redteam</p>
+                  <p><small>Vehicle Cybersecurity Researcher</small></p>
                 </div>
               </li>
             </ul>
