@@ -8,9 +8,8 @@ import { ActivityHistorySection } from "@/app/overview/ActivityHistorySection";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
-import { NOTION_REVALIDATE_SECONDS } from "@/lib/notion/revalidate";
 
-export const revalidate = NOTION_REVALIDATE_SECONDS;
+export const revalidate = 900;
 
 type ActivityCell = {
   dateKey: string;
