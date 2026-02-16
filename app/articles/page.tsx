@@ -1,8 +1,9 @@
 import { ArticlesSearchClient } from "@/app/articles/ArticlesSearchClient";
 import { Header } from "@/components/layout/Header";
 import { getPostsOrNull } from "@/lib/notion/safe";
+import { NOTION_REVALIDATE_SECONDS } from "@/lib/notion/revalidate";
 
-export const revalidate = 300;
+export const revalidate = NOTION_REVALIDATE_SECONDS;
 
 type ArticlesPageProps = {
   searchParams: Promise<{

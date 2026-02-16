@@ -3,8 +3,9 @@ import { Header } from "@/components/layout/Header";
 import { CategoryCard } from "@/components/post/CategoryCard";
 import { getCategorySlug } from "@/lib/notion/posts";
 import { getPostsOrNull } from "@/lib/notion/safe";
+import { NOTION_REVALIDATE_SECONDS } from "@/lib/notion/revalidate";
 
-export const revalidate = 300;
+export const revalidate = NOTION_REVALIDATE_SECONDS;
 
 export default async function CollectionPage() {
   const posts = await getPostsOrNull();

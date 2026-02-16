@@ -5,8 +5,9 @@ import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { getCategorySlug } from "@/lib/notion/posts";
 import { getPostsOrNull } from "@/lib/notion/safe";
+import { NOTION_REVALIDATE_SECONDS } from "@/lib/notion/revalidate";
 
-export const revalidate = 300;
+export const revalidate = NOTION_REVALIDATE_SECONDS;
 
 type CategoryPageProps = {
   params: Promise<{

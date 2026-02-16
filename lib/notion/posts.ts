@@ -10,6 +10,7 @@ import {
 } from "@notionhq/client/build/src/api-endpoints";
 import { getNotionClient } from "@/lib/notion/client";
 import { CategorySummary, PostSummary } from "@/lib/models/post";
+import { NOTION_REVALIDATE_SECONDS } from "@/lib/notion/revalidate";
 import siteConfig from "@/site.config";
 
 const NOTION_DATABASE_ID = siteConfig.notion.notion_page_id;
@@ -354,7 +355,7 @@ async function fetchPosts(): Promise<PostSummary[]> {
 }
 
 const getPostsCached = unstable_cache(fetchPosts, ["notion-posts"], {
-  revalidate: 300,
+  revalidate: NOTION_REVALIDATE_SECONDS,
   tags: ["notion-posts"]
 });
 

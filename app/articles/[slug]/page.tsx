@@ -5,8 +5,9 @@ import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { CodeBlockTabs } from "@/components/post/CodeBlockTabs";
 import { getPostBySlugOrNull } from "@/lib/notion/safe";
+import { NOTION_REVALIDATE_SECONDS } from "@/lib/notion/revalidate";
 
-export const revalidate = 300;
+export const revalidate = NOTION_REVALIDATE_SECONDS;
 
 type PostPageProps = {
   params: Promise<{
