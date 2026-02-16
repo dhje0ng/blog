@@ -36,31 +36,113 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const renderTextWithLinks = (text: string) => {
-    const pattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
-    const nodes: ReactNode[] = [];
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
+  const renderInlineMarkdown = (text: string): ReactNode[] => {
+    let nodeKey = 0;
 
-    while ((match = pattern.exec(text)) !== null) {
-      if (match.index > lastIndex) {
-        nodes.push(text.slice(lastIndex, match.index));
+    const parse = (input: string): ReactNode[] => {
+      const nodes: ReactNode[] = [];
+      let plainTextBuffer = "";
+      let cursor = 0;
+
+      const pushBufferedText = () => {
+        if (!plainTextBuffer) return;
+        nodes.push(plainTextBuffer);
+        plainTextBuffer = "";
+      };
+
+      const findClosingDelimiter = (start: number, delimiter: string) => {
+        let position = start;
+
+        while (position < input.length) {
+          const foundIndex = input.indexOf(delimiter, position);
+
+          if (foundIndex === -1) return -1;
+          if (input[foundIndex - 1] !== "\\") return foundIndex;
+
+          position = foundIndex + delimiter.length;
+        }
+
+        return -1;
+      };
+
+      const consumeLink = () => {
+        const labelStart = cursor + 1;
+        const labelEnd = input.indexOf("]", labelStart);
+
+        if (labelEnd === -1 || input[labelEnd + 1] !== "(") return false;
+
+        const urlStart = labelEnd + 2;
+        const urlEnd = input.indexOf(")", urlStart);
+
+        if (urlEnd === -1) return false;
+
+        const label = input.slice(labelStart, labelEnd);
+        const href = input.slice(urlStart, urlEnd).trim();
+
+        if (!/^https?:\/\//.test(href)) return false;
+
+        pushBufferedText();
+        nodeKey += 1;
+        nodes.push(
+          <Link key={`inline-link-${nodeKey}`} href={href} target="_blank" rel="noreferrer noopener">
+            {parse(label)}
+          </Link>
+        );
+        cursor = urlEnd + 1;
+        return true;
+      };
+
+      while (cursor < input.length) {
+        if (input[cursor] === "[" && consumeLink()) {
+          continue;
+        }
+
+        if (input.startsWith("`", cursor)) {
+          const closing = findClosingDelimiter(cursor + 1, "`");
+
+          if (closing !== -1) {
+            pushBufferedText();
+            nodeKey += 1;
+            nodes.push(<code key={`inline-code-${nodeKey}`}>{input.slice(cursor + 1, closing)}</code>);
+            cursor = closing + 1;
+            continue;
+          }
+        }
+
+        if (input.startsWith("**", cursor) || input.startsWith("__", cursor)) {
+          const delimiter = input.slice(cursor, cursor + 2);
+          const closing = findClosingDelimiter(cursor + 2, delimiter);
+
+          if (closing !== -1) {
+            pushBufferedText();
+            nodeKey += 1;
+            nodes.push(<strong key={`inline-strong-${nodeKey}`}>{parse(input.slice(cursor + 2, closing))}</strong>);
+            cursor = closing + 2;
+            continue;
+          }
+        }
+
+        if (input.startsWith("~~", cursor)) {
+          const closing = findClosingDelimiter(cursor + 2, "~~");
+
+          if (closing !== -1) {
+            pushBufferedText();
+            nodeKey += 1;
+            nodes.push(<del key={`inline-del-${nodeKey}`}>{parse(input.slice(cursor + 2, closing))}</del>);
+            cursor = closing + 2;
+            continue;
+          }
+        }
+
+        plainTextBuffer += input[cursor];
+        cursor += 1;
       }
 
-      nodes.push(
-        <Link key={`${match[2]}-${match.index}`} href={match[2]} target="_blank" rel="noreferrer noopener">
-          {match[1]}
-        </Link>
-      );
+      pushBufferedText();
+      return nodes;
+    };
 
-      lastIndex = pattern.lastIndex;
-    }
-
-    if (lastIndex < text.length) {
-      nodes.push(text.slice(lastIndex));
-    }
-
-    return nodes;
+    return parse(text);
   };
 
   const markdownSource = post.content ?? post.summary;
@@ -215,7 +297,7 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                 if (block.level === 1) {
                   return (
                     <h2 key={block.id} id={block.anchorId}>
-                      {renderTextWithLinks(block.text)}
+                      {renderInlineMarkdown(block.text)}
                     </h2>
                   );
                 }
@@ -223,14 +305,14 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                 if (block.level === 2) {
                   return (
                     <h3 key={block.id} id={block.anchorId}>
-                      {renderTextWithLinks(block.text)}
+                      {renderInlineMarkdown(block.text)}
                     </h3>
                   );
                 }
 
                 return (
                   <h4 key={block.id} id={block.anchorId}>
-                    {renderTextWithLinks(block.text)}
+                    {renderInlineMarkdown(block.text)}
                   </h4>
                 );
               }
@@ -248,7 +330,7 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                 return <CodeBlockTabs key={block.id} variants={block.variants} />;
               }
 
-              return <p key={block.id}>{renderTextWithLinks(block.text)}</p>;
+              return <p key={block.id}>{renderInlineMarkdown(block.text)}</p>;
             })}
             {!!post.tags.length && (
               <ul className="post-tag-list" aria-label="post tags">
@@ -266,7 +348,7 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
                 <ol>
                   {tableOfContents.map((heading) => (
                     <li key={heading.id} className={`post-toc-depth-${heading.level}`}>
-                      <a href={`#${heading.anchorId}`}>{heading.text}</a>
+                      <a href={`#${heading.anchorId}`}>{renderInlineMarkdown(heading.text)}</a>
                     </li>
                   ))}
                 </ol>
