@@ -6,7 +6,7 @@ import { PostListItem } from "@/components/post/PostListItem";
 import { getCategorySlug } from "@/lib/notion/posts";
 import { getPostsOrNull } from "@/lib/notion/safe";
 
-export const revalidate = 300;
+export const revalidate = 900;
 
 type CategoryPageProps = {
   params: Promise<{

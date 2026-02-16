@@ -6,7 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { CodeBlockTabs } from "@/components/post/CodeBlockTabs";
 import { getPostBySlugOrNull } from "@/lib/notion/safe";
 
-export const revalidate = 300;
+export const revalidate = 900;
 
 type PostPageProps = {
   params: Promise<{

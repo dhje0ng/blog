@@ -4,7 +4,7 @@ import { CategoryCard } from "@/components/post/CategoryCard";
 import { getCategorySlug } from "@/lib/notion/posts";
 import { getPostsOrNull } from "@/lib/notion/safe";
 
-export const revalidate = 300;
+export const revalidate = 900;
 
 export default async function CollectionPage() {
   const posts = await getPostsOrNull();
