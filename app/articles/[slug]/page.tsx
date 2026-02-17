@@ -149,6 +149,7 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
   const rawLines = markdownSource.split("\n");
   const contentBlocks: Array<
     | { id: string; type: "image"; src: string; alt: string }
+    | { id: string; type: "bookmark"; href: string; title: string; domain: string }
     | { id: string; type: "paragraph"; text: string }
     | { id: string; type: "heading"; text: string; level: number; anchorId: string }
     | { id: string; type: "code"; variants: Array<{ language: string; code: string }> }
@@ -236,6 +237,27 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
       });
       lineIndex += 1;
       continue;
+    }
+
+    const bookmarkMatch = trimmedLine.match(/^\[(.+?)\]\((https?:\/\/[^\s)]+)\)$/);
+
+    if (bookmarkMatch) {
+      const [, rawTitle, href] = bookmarkMatch;
+
+      try {
+        const domain = new URL(href).hostname.replace(/^www\./, "");
+        contentBlocks.push({
+          id: `${post.id}-bookmark-${lineIndex}`,
+          type: "bookmark",
+          href,
+          title: rawTitle.trim() || href,
+          domain
+        });
+        lineIndex += 1;
+        continue;
+      } catch {
+        // ignore invalid URL and fall back to paragraph rendering.
+      }
     }
 
     const headingMatch = trimmedLine.match(/^(#{1,3})\s+(.+)$/);
@@ -328,6 +350,21 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
 
               if (block.type === "code") {
                 return <CodeBlockTabs key={block.id} variants={block.variants} />;
+              }
+
+              if (block.type === "bookmark") {
+                return (
+                  <a
+                    key={block.id}
+                    className="post-detail-bookmark"
+                    href={block.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <span className="post-detail-bookmark-title">{block.title}</span>
+                    <span className="post-detail-bookmark-url">{block.domain}</span>
+                  </a>
+                );
               }
 
               return <p key={block.id}>{renderInlineMarkdown(block.text)}</p>;

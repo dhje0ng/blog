@@ -406,6 +406,36 @@ a {
   border: 1px solid var(--line-subtle);
 }
 
+.post-detail-bookmark {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 1.2em;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line-subtle);
+  background: var(--surface);
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.post-detail-bookmark:hover {
+  border-color: var(--link);
+  transform: translateY(-1px);
+}
+
+.post-detail-bookmark-title {
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.post-detail-bookmark-url {
+  color: var(--subtext);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
 
 .post-code-block {
   margin: 0 0 1.4em;
