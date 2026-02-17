@@ -90,6 +90,11 @@ a {
   color: var(--text);
 }
 
+.gh-icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
 .gh-share-feedback {
   position: absolute;
   right: 24px;
