@@ -1028,7 +1028,7 @@ a {
 .popular-card {
   padding: 8px 0;
   display: grid;
-  grid-template-columns: 160px 1fr;
+  grid-template-columns: 132px 1fr;
   gap: 14px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1088,7 +1088,7 @@ a {
 
 .post-list-body.with-preview {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 124px 1fr;
   gap: 14px;
 }
 
@@ -1534,9 +1534,12 @@ a {
     gap: 4px;
   }
 
-  .popular-card,
+  .popular-card {
+    grid-template-columns: 108px 1fr;
+  }
+
   .post-list-body.with-preview {
-    grid-template-columns: 1fr;
+    grid-template-columns: 104px 1fr;
   }
 
   .popular-preview,
