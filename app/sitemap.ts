@@ -4,7 +4,7 @@ import { getPostsOrNull } from "@/lib/notion/safe";
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dhjeong.kr";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticRoutes = ["/", "/overview", "/about", "/articles", "/collection", "/rss.xml"];
+  const staticRoutes = ["/", "/overview", "/articles", "/collection", "/rss.xml"];
   const now = new Date();
   const posts = await getPostsOrNull();
 
