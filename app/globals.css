@@ -1186,22 +1186,23 @@ a {
 
 .about-page {
   display: grid;
-  gap: 20px;
+  gap: 22px;
 }
 
 .about-hero-card,
 .about-panel {
   border: 1px solid var(--line-subtle);
-  border-radius: 14px;
+  border-radius: 18px;
   background: var(--bg);
 }
 
 .about-hero-card {
-  padding: 26px;
+  padding: 28px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
-  gap: 24px;
+  gap: 28px;
   align-items: stretch;
+  box-shadow: 0 18px 42px rgba(16, 24, 40, 0.06);
 }
 
 .about-hero-card h1 {
@@ -1211,9 +1212,34 @@ a {
 }
 
 .about-hero-copy {
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   color: var(--muted);
-  line-height: 1.75;
+  line-height: 1.85;
+}
+
+.about-stat-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.about-stat-card {
+  border: 1px solid var(--line-subtle);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 70%, transparent), var(--bg));
+  display: grid;
+  gap: 4px;
+}
+
+.about-stat-card strong {
+  font-size: 1.05rem;
+}
+
+.about-stat-card span {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .about-hero-actions {
@@ -1238,7 +1264,7 @@ a {
 }
 
 .about-profile-wrap {
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--line-subtle);
   background: var(--surface);
@@ -1256,15 +1282,20 @@ a {
 .about-grid-section {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 14px;
   align-items: stretch;
 }
 
 .about-panel {
-  padding: 20px;
+  padding: 22px;
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 50%, transparent), var(--bg));
+}
+
+.about-panel-full-width {
+  grid-column: 1 / -1;
 }
 
 .about-panel h2 {
@@ -1326,14 +1357,20 @@ a {
 .about-project-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .about-project-card {
   border: 1px solid var(--line-subtle);
-  border-radius: 12px;
-  padding: 14px;
-  background: var(--surface);
+  border-radius: 14px;
+  padding: 16px;
+  background: var(--bg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(16, 24, 40, 0.08);
 }
 
 .about-project-card h3 {
@@ -1349,16 +1386,16 @@ a {
 }
 
 .about-talk-card {
-  background: var(--bg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, var(--bg)), var(--bg));
 }
 
 
 .about-competition-card {
-  background: var(--bg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 82%, transparent), var(--bg));
 }
 
 .about-disclosure-card {
-  background: var(--bg);
+  background: linear-gradient(180deg, color-mix(in srgb, #ff5a5a 6%, var(--bg)), var(--bg));
 }
 
 .about-competition-card h3 {
@@ -1456,6 +1493,10 @@ a {
   .about-hero-card {
     grid-template-columns: 1fr;
   }
+
+  .about-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
@@ -1523,6 +1564,10 @@ a {
 
   .about-panel {
     padding: 16px;
+  }
+
+  .about-stat-grid {
+    grid-template-columns: 1fr;
   }
 
   .about-hero-actions {

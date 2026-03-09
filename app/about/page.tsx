@@ -5,93 +5,97 @@ import siteConfig from "@/site.config";
 
 const featuredProjects = [
   {
-    title: "How to USB Fuzzing in vehicles to discover the real world vulnerability",
-    description: "Performed real-world automotive penetration testing through USB device fuzzing, successfully identifying critical vulnerabilities",
+    title: "USB Fuzzing in Vehicles: Discovering Real-World Vulnerabilities",
+    description:
+      "Performed real-world automotive penetration testing through USB device fuzzing and identified critical infotainment vulnerabilities.",
     publishedDate: "Aug 09, 2023",
     references: ["DEFCON 31 Car Hacking Village"]
-  },
+  }
 ];
 
 const disclosureVulnerabilities = [
   {
     cveId: "CVE-2023-39076",
-    description: "Discovered a DoS vulnerability in the GM Equinox infotainment system triggered by malformed USB data input.",
+    description:
+      "Discovered a DoS vulnerability in the GM Equinox infotainment system triggered by malformed USB data input.",
     target: "General Motors",
-    references: [
-      "https://nvd.nist.gov/vuln/detail/CVE-2023-39076",
-    ]
+    references: ["https://nvd.nist.gov/vuln/detail/CVE-2023-39076"]
   },
   {
     cveId: "CVE-2023-39075",
-    description: "Discovered a DoS vulnerability in the Renault ZOE infotainment system triggered by malformed USB data input.",
+    description:
+      "Discovered a DoS vulnerability in the Renault ZOE infotainment system triggered by malformed USB data input.",
     target: "Renault Group",
-    references: [
-      "https://nvd.nist.gov/vuln/detail/CVE-2023-39075"
-    ]
+    references: ["https://nvd.nist.gov/vuln/detail/CVE-2023-39075"]
   },
   {
     cveId: "CVE-2022-[REDACTED]",
-    description: "Discovered a DoS vulnerability in the BMW infotainment system triggered by malformed data input.",
+    description:
+      "Discovered a DoS vulnerability in the BMW infotainment system triggered by malformed data input.",
     target: "BMW Automotive",
-    references: [
-      "https://www.bmwgroup.com/en/general/Security.html"
-    ]
-  },
+    references: ["https://www.bmwgroup.com/en/general/Security.html"]
+  }
 ];
 
 const featuredCompetitions = [
   {
     title: "Automotive CTF 2024",
-    date: "Oct 21 2024",
-    result: "3rd place (Team. JJJJJ)",
+    date: "Oct 21, 2024",
+    result: "3rd place (Team JJJJJ)",
     location: "Detroit, USA",
     organizer: "Vicone & Blockharbor Cybersecurity"
   },
   {
     title: "Car Hacking Village CTF 2024",
     date: "Aug 09, 2024",
-    result: "4rd place (Team. AUTOCRYPT)",
+    result: "4th place (Team AUTOCRYPT)",
     location: "Las Vegas, USA",
-    organizer: "Car Hacking Village, Defcon"
+    organizer: "Car Hacking Village, DEF CON"
   },
   {
     title: "Car Hacking Village CTF 2023",
     date: "Aug 09, 2023",
-    result: "4rd place (Team. AUTOCRYPT)",
+    result: "4th place (Team AUTOCRYPT)",
     location: "Las Vegas, USA",
-    organizer: "Car Hacking Village, Defcon"
+    organizer: "Car Hacking Village, DEF CON"
   },
   {
     title: "Car Hacking Village CTF 2022",
-    date: "Aug 09, 2023",
-    result: "5rd place (Team. AUTOCRYPT)",
+    date: "Aug 09, 2022",
+    result: "5th place (Team AUTOCRYPT)",
     location: "Las Vegas, USA",
-    organizer: "Car Hacking Village, Defcon"
+    organizer: "Car Hacking Village, DEF CON"
   },
   {
     title: "Cyber Security Challenge",
     date: "Aug ~ Nov 2021",
-    result: "1st place (Team. AUTOCRYPT)",
+    result: "1st place (Team AUTOCRYPT)",
     location: "Seoul, South Korea",
     organizer: "Ministry of Science and ICT"
   },
   {
     title: "KOSPO Web Service Security Competition",
     date: "Aug 2021",
-    result: "Honorable Mention (Team. 고점에사람있어요)",
+    result: "Honorable Mention (Team 고점에사람있어요)",
     location: "Seoul, South Korea",
     organizer: "KOSPO"
   },
   {
     title: "Y-CTF 2018",
-    date: "Nov 2021",
-    result: "1st place (Team. 김봉혁의 빠루교실)",
+    date: "Nov 2018",
+    result: "1st place (Team 김봉혁의 빠루교실)",
     location: "Seoul, South Korea",
-    organizer: "Yeungnam University Collage"
-  },
+    organizer: "Yeungnam University College"
+  }
 ];
 
-const capabilities = ["Penetration Testing", "Vulnerability Research"];
+const capabilities = ["Penetration Testing", "Vulnerability Research", "Automotive Security", "Exploit Validation"];
+
+const quickStats = [
+  { label: "Disclosed CVEs", value: "3+" },
+  { label: "CTF Awards", value: "7" },
+  { label: "Primary Focus", value: "Automotive" }
+];
 
 export default function AboutPage() {
   return (
@@ -103,12 +107,18 @@ export default function AboutPage() {
             <p className="eyebrow">About</p>
             <h1>{siteConfig.profile.name}</h1>
             <p className="about-hero-copy">
-              Hi, I’m a cybersecurity researcher from the Republic of Korea. 
-              Most of my work centers around automotive cybersecurity, protecting vehicles from potential attacks.
-              I’m also passionate about finding and fixing software vulnerabilities through bug hunting. ✅ 
-              
-              Always curious, I love learning from every challenge I face 😄
+              Hi, I&apos;m a cybersecurity researcher based in South Korea. My work focuses on automotive security,
+              practical penetration testing, and vulnerability discovery. I enjoy turning complex attack surfaces
+              into clear defensive improvements through repeatable research and validation.
             </p>
+            <div className="about-stat-grid">
+              {quickStats.map((stat) => (
+                <article key={stat.label} className="about-stat-card">
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
+                </article>
+              ))}
+            </div>
             <div className="about-hero-actions">
               <Link href="/articles" className="about-action-primary">
                 View Articles
@@ -119,7 +129,14 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="about-profile-wrap">
-            <Image src={siteConfig.profile.avatar} alt={`${siteConfig.profile.name} portrait`} width={320} height={360} className="about-portrait" />
+            <Image
+              src={siteConfig.profile.avatar}
+              alt={`${siteConfig.profile.name} portrait`}
+              width={320}
+              height={360}
+              className="about-portrait"
+              priority
+            />
           </div>
         </div>
 
@@ -130,15 +147,19 @@ export default function AboutPage() {
               <li>
                 <span>Mar 2018 ~ Feb 2022</span>
                 <div className="about-timeline-content">
-                  <p>Yeungnam University Collage</p>
-                  <p><small>Graduated from the Depts, Cybersecurity</small></p>
+                  <p>Yeungnam University College</p>
+                  <p>
+                    <small>B.S. in Cybersecurity</small>
+                  </p>
                 </div>
               </li>
               <li>
-                <span>July 2020 - Mar 2021</span>
+                <span>Jul 2020 ~ Mar 2021</span>
                 <div className="about-timeline-content">
                   <p>Best of the Best, KITRI</p>
-                  <p><small>Completed the Security Development Track</small></p>
+                  <p>
+                    <small>Completed the Security Development Track</small>
+                  </p>
                 </div>
               </li>
             </ul>
@@ -151,20 +172,24 @@ export default function AboutPage() {
                 <span>Jan 2025 ~ Present</span>
                 <div className="about-timeline-content">
                   <p>ROK GOC/GCC (Ground Operations Command)</p>
-                  <p><small>Security Analyst (Malware, Vulnerability)</small></p>
+                  <p>
+                    <small>Security Analyst (Malware, Vulnerability)</small>
+                  </p>
                 </div>
               </li>
               <li>
-                <span>Jun 2021 - Dec 2024</span>
+                <span>Jun 2021 ~ Dec 2024</span>
                 <div className="about-timeline-content">
-                  <p>Autocrypt, Redteam</p>
-                  <p><small>Vehicle Cybersecurity Researcher</small></p>
+                  <p>AUTOCRYPT, Red Team</p>
+                  <p>
+                    <small>Vehicle Cybersecurity Researcher</small>
+                  </p>
                 </div>
               </li>
             </ul>
           </article>
 
-          <article className="about-panel">
+          <article className="about-panel about-panel-full-width">
             <h2>Capabilities</h2>
             <div className="about-skill-cloud">
               {capabilities.map((skill) => (
@@ -176,7 +201,7 @@ export default function AboutPage() {
 
         <section className="about-panel">
           <div className="section-title-row">
-            <h2>Talk/Speaker</h2>
+            <h2>Talk / Speaker</h2>
           </div>
           <div className="about-project-grid">
             {featuredProjects.map((project) => (
@@ -185,7 +210,7 @@ export default function AboutPage() {
                 <p>{project.description}</p>
                 <div className="about-project-meta">
                   <p>
-                    <strong>Published Date</strong>
+                    <strong>Published</strong>
                     <span>{project.publishedDate}</span>
                   </p>
                   <p>
@@ -231,7 +256,7 @@ export default function AboutPage() {
 
         <section className="about-panel">
           <div className="section-title-row">
-            <h2>Disclosure Vulnerabilities</h2>
+            <h2>Disclosed Vulnerabilities</h2>
           </div>
           <div className="about-project-grid">
             {disclosureVulnerabilities.map((item) => (
