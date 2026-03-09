@@ -13,27 +13,39 @@ function escapeXml(value: string): string {
 
 export async function GET() {
   const posts = await getPostsOrNull();
-  const items = (posts ?? []).map((post) => {
+  const sortedPosts = [...(posts ?? [])].sort(
+    (a, b) => new Date(b.updateAt).getTime() - new Date(a.updateAt).getTime()
+  );
+
+  const items = sortedPosts.map((post) => {
     const postUrl = `${BASE_URL}/articles/${post.slug}`;
     const publishDate = new Date(post.date || post.updateAt).toUTCString();
+    const updatedDate = new Date(post.updateAt).toUTCString();
 
     return `
       <item>
         <title>${escapeXml(post.title)}</title>
         <link>${postUrl}</link>
-        <guid>${postUrl}</guid>
+        <guid isPermaLink="true">${postUrl}</guid>
         <pubDate>${publishDate}</pubDate>
         <description>${escapeXml(post.summary)}</description>
+        <category>${escapeXml(post.category)}</category>
+        <source url="${BASE_URL}/rss.xml">${escapeXml("N-Blog RSS Feed")}</source>
+        <atom:updated>${updatedDate}</atom:updated>
       </item>`;
   });
 
+  const latestDate = sortedPosts[0]?.updateAt;
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-    <rss version="2.0">
+    <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
       <channel>
         <title>${escapeXml("N-Blog RSS Feed")}</title>
         <link>${BASE_URL}</link>
+        <atom:link href="${BASE_URL}/rss.xml" rel="self" type="application/rss+xml" />
         <description>${escapeXml("N-Blog의 최신 아티클 RSS 피드")}</description>
         <language>ko-KR</language>
+        ${latestDate ? `<lastBuildDate>${new Date(latestDate).toUTCString()}</lastBuildDate>` : ""}
         ${items.join("\n")}
       </channel>
     </rss>`;
