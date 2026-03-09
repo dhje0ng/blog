@@ -101,7 +101,7 @@ export default function AboutPage() {
   return (
     <main>
       <Header />
-      <section className="container top-gap section-gap about-page">
+      <section className="container top-gap section-gap about-page about-gh-theme">
         <div className="about-hero-card">
           <div>
             <p className="eyebrow">About</p>
@@ -142,7 +142,10 @@ export default function AboutPage() {
 
         <section className="about-grid-section">
           <article className="about-panel">
-            <h2>Education</h2>
+            <div className="about-section-head">
+              <span>Background</span>
+              <h2>Education</h2>
+            </div>
             <ul className="about-timeline">
               <li>
                 <span>Mar 2018 ~ Feb 2022</span>
@@ -166,7 +169,10 @@ export default function AboutPage() {
           </article>
 
           <article className="about-panel">
-            <h2>Work Experience</h2>
+            <div className="about-section-head">
+              <span>Career</span>
+              <h2>Work Experience</h2>
+            </div>
             <ul className="about-timeline">
               <li>
                 <span>Jan 2025 ~ Present</span>
@@ -190,7 +196,10 @@ export default function AboutPage() {
           </article>
 
           <article className="about-panel about-panel-full-width">
-            <h2>Capabilities</h2>
+            <div className="about-section-head">
+              <span>Expertise</span>
+              <h2>Capabilities</h2>
+            </div>
             <div className="about-skill-cloud">
               {capabilities.map((skill) => (
                 <span key={skill}>{skill}</span>
@@ -200,7 +209,8 @@ export default function AboutPage() {
         </section>
 
         <section className="about-panel">
-          <div className="section-title-row">
+          <div className="about-section-head">
+            <span>Highlights</span>
             <h2>Talk / Speaker</h2>
           </div>
           <div className="about-project-grid">
@@ -224,7 +234,8 @@ export default function AboutPage() {
         </section>
 
         <section className="about-panel">
-          <div className="section-title-row">
+          <div className="about-section-head">
+            <span>Achievements</span>
             <h2>Competition</h2>
           </div>
           <div className="about-project-grid">
@@ -255,7 +266,8 @@ export default function AboutPage() {
         </section>
 
         <section className="about-panel">
-          <div className="section-title-row">
+          <div className="about-section-head">
+            <span>Security Research</span>
             <h2>Disclosed Vulnerabilities</h2>
           </div>
           <div className="about-project-grid">
