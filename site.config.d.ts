@@ -9,6 +9,7 @@ declare const siteConfig: {
     handle: string;
     intro: string;
     avatar: string;
+    aboutMeUrl: string;
   };
   social: Record<string, string>;
   notion: {

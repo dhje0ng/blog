@@ -169,6 +169,9 @@ export default async function OverviewPage() {
               <Link href="/overview">Overview</Link>
               <Link href="/collection">Collection ({collectionCount})</Link>
               <Link href="/articles">Articles ({posts.length})</Link>
+              <a href={siteConfig.profile.aboutMeUrl} target="_blank" rel="noreferrer noopener">
+                About me
+              </a>
             </nav>
           </aside>
 
