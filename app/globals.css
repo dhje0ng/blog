@@ -1174,6 +1174,8 @@ a {
 
   .overview-profile-column {
     position: static;
+    width: 100%;
+    max-width: none;
   }
 
   .overview-main-grid {
@@ -1192,6 +1194,10 @@ a {
 }
 
 @media (max-width: 768px) {
+  .overview-layout {
+    width: min(1240px, calc(100vw - 16px));
+  }
+
   .gh-header-inner {
     min-height: 56px;
     width: min(1240px, calc(100vw - 24px));
@@ -1228,6 +1234,11 @@ a {
   .category-grid,
   .overview-archive-grid {
     grid-template-columns: 1fr;
+  }
+
+  .readme-head-row {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .post-detail-wrap {
@@ -1286,7 +1297,7 @@ a {
   .activity-month-labels,
   .activity-history-grid,
   .activity-history-footer {
-    min-width: 680px;
+    min-width: 640px;
   }
 }
 
