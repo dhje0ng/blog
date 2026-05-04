@@ -1265,6 +1265,68 @@ a {
   .post-list-preview {
     max-width: 100%;
   }
+
+  .overview-section-head {
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .activity-head-with-toggle {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .activity-year-toggle {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .activity-month-labels,
+  .activity-history-grid,
+  .activity-history-footer {
+    min-width: 680px;
+  }
+}
+
+@media (max-width: 640px) {
+  .popular-card,
+  .post-list-body.with-preview {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .popular-preview,
+  .post-list-preview {
+    aspect-ratio: 16 / 9;
+  }
+
+  .activity-month-labels {
+    display: none;
+  }
+
+  .activity-month-labels,
+  .activity-history-grid,
+  .activity-history-footer {
+    min-width: 0;
+  }
+
+  .activity-history-grid {
+    grid-template-columns: repeat(53, 9px);
+    gap: 3px;
+  }
+
+  .activity-cell {
+    width: 9px;
+    height: 9px;
+  }
+
+  .activity-history-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 
 @media (max-width: 480px) {
