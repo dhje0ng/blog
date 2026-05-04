@@ -176,18 +176,6 @@ export default async function OverviewPage() {
           </aside>
 
           <div className="overview-content-column">
-            <article className="overview-readme" aria-label="profile introduction">
-              <h2>Hi there, I&apos;m {siteConfig.profile.name} 👋</h2>
-              <ul className="readme-bullet-list">
-                <li>📝 전체 게시글: {posts.length}개의 글을 발행했어요.</li>
-              </ul>
-              <div className="overview-readme-divider" aria-hidden="true" />
-              <ul className="readme-history-list">
-                <li>Next.JS + React + Notion 으로 만들어진 블로그에요!</li>
-                <li>원활한 접속을 위해서 Chrome 또는 Edge 브라우저를 통해 접속해주세요!</li>
-              </ul>
-            </article>
-
             <ActivityHistorySection years={activityYears} />
 
             <section className="overview-section">
