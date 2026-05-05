@@ -17,7 +17,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang={siteConfig.blog.language}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <footer className="site-footer">
+          <div className="container site-footer-inner">CopyRight 2026 Donghyeon Jeong</div>
+        </footer>
+      </body>
     </html>
   );
 }
