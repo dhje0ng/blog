@@ -20,9 +20,13 @@ const nextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/@resume",
-          destination: "https://resume-dhjeong.vercel.app/"
+          source: "/resume",
+          destination: "https://resume-dhjeong.vercel.app"
         },
+        {
+          source: "/resume/:path*",
+          destination: "https://resume-dhjeong.vercel.app/:path*"
+        }
       ]
     };
   }
