@@ -15,6 +15,16 @@ const nextConfig = {
         hostname: "staticmap.openstreetmap.de"
       }
     ]
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/@resume",
+          destination: "https://resume-dhjeong.vercel.app/"
+        },
+      ]
+    };
   }
 };
 
