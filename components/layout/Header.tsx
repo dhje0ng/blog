@@ -1,23 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import siteConfig from "@/site.config";
 
 const THEME_KEY = "n-blog-theme";
+const THEME_CHANGE_EVENT = "n-blog-theme-change";
 
 type ThemeMode = "light" | "dark";
 
-export function Header() {
-  const [theme, setTheme] = useState<ThemeMode>("light");
-  const [shareMessage, setShareMessage] = useState("");
+function subscribeTheme(callback: () => void) {
+  window.addEventListener(THEME_CHANGE_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(THEME_CHANGE_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem(THEME_KEY);
-    const nextTheme: ThemeMode = savedTheme === "dark" ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", nextTheme);
-    setTheme(nextTheme);
-  }, []);
+function getThemeSnapshot(): ThemeMode {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
+
+function getServerThemeSnapshot(): ThemeMode {
+  return "light";
+}
+
+export function Header() {
+  // Theme lives on <html data-theme> (set pre-paint by the layout's inline script).
+  // useSyncExternalStore reads it without an effect, avoiding cascading renders and FOUC.
+  const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
+  const [shareMessage, setShareMessage] = useState("");
 
   useEffect(() => {
     if (!shareMessage) {
@@ -30,9 +43,9 @@ export function Header() {
 
   const handleThemeToggle = () => {
     const nextTheme: ThemeMode = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
     localStorage.setItem(THEME_KEY, nextTheme);
     document.documentElement.setAttribute("data-theme", nextTheme);
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   };
 
   const handleShare = async () => {

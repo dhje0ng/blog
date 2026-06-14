@@ -327,9 +327,10 @@ async function fetchPosts(): Promise<PostSummary[]> {
       const tags = readMultiSelectProperty(page, ["tags", "tag"]);
       const thumbnail = readThumbnailProperty(page);
 
+      // Only walk the page's block tree when no inline content property is set.
+      // This avoids a recursive Notion blocks fetch per post when content already exists.
       const contentFromProperty = readTextProperty(page, ["content", "body"]);
-      const contentFromBlocks = await loadPageContent(page.id);
-      const content = contentFromProperty || contentFromBlocks || summary;
+      const content = contentFromProperty || (await loadPageContent(page.id)) || summary;
 
       return {
         id: page.id,
