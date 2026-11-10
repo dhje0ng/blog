@@ -6,26 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:security": "node --test tests/security.test.mjs"
   },
   "dependencies": {
-    "next": "^16.2.9",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "@notionhq/client": "^2.3.0",
-    "@vercel/analytics": "^2.0.1"
+    "@vercel/analytics": "^2.0.1",
+    "next": "^16.4.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.9",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.6",
     "typescript": "^6.0.3"
   },
   "overrides": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "postcss": "^8.5.15"
+    "postcss": "^8.5.32",
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.1"
+    }
   }
 }

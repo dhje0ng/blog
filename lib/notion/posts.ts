@@ -11,6 +11,7 @@ import {
 import { getNotionClient } from "@/lib/notion/client";
 import { CategorySummary, PostSummary } from "@/lib/models/post";
 import { NOTION_REVALIDATE_SECONDS } from "@/lib/notion/revalidate";
+import { normalizeStatus, normalizePostSlug } from "@/lib/security/publication";
 import siteConfig from "@/site.config";
 
 const NOTION_DATABASE_ID = siteConfig.notion.notion_page_id;
@@ -36,10 +37,6 @@ function normalizePageId(raw: string): string {
   }
 
   return compact;
-}
-
-function normalizeStatus(status: string): "public" | "private" {
-  return status.trim().toLowerCase() === "private" ? "private" : "public";
 }
 
 function slugifyCategory(name: string): string {
@@ -314,10 +311,11 @@ async function fetchPosts(): Promise<PostSummary[]> {
   const database = await loadDatabase();
   const pages = await loadPages(database.id);
 
+  const publicPages = pages.filter((page) => normalizeStatus(readTextProperty(page, ["status", "visibility"])) === "public");
   const posts = await Promise.all(
-    pages.map(async (page) => {
+    publicPages.map(async (page) => {
       const title = readTextProperty(page, ["title", "name"]) || "Untitled";
-      const slug = readTextProperty(page, ["slug", "url"]) || page.id.replace(/-/g, "");
+      const slug = normalizePostSlug(readTextProperty(page, ["slug", "url"]), page.id);
       const author = readTextProperty(page, ["author", "writer"]) || "Unknown";
       const status = normalizeStatus(readTextProperty(page, ["status", "visibility"]));
       const date = readDateProperty(page, ["date", "publish date", "published"]) || new Date().toISOString().split("T")[0];
@@ -355,7 +353,7 @@ async function fetchPosts(): Promise<PostSummary[]> {
     .sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }
 
-const getPostsCached = unstable_cache(fetchPosts, ["notion-posts"], {
+const getPostsCached = unstable_cache(fetchPosts, ["notion-posts-public-v2"], {
   revalidate: NOTION_REVALIDATE_SECONDS,
   tags: ["notion-posts"]
 });
