@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { getCategorySlug } from "@/lib/notion/posts";
 import { getPostsOrNull } from "@/lib/notion/safe";
@@ -52,7 +51,6 @@ export default async function CategoryDetailPage({ params }: CategoryPageProps) 
 
   return (
     <main>
-      <Header />
       <section className="container section-gap top-gap mobile-viewer-page">
         <div className="collection-head">
           <Link href="/collection" className="collection-back-link">

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { Header } from "@/components/layout/Header";
 import { CodeBlockTabs } from "@/components/post/CodeBlockTabs";
 import { getPostBySlugOrNull } from "@/lib/notion/safe";
 
@@ -291,7 +290,6 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
 
   return (
     <main>
-      <Header />
       <article className="post-detail-wrap mobile-viewer-page mobile-viewer-detail">
         <div className="post-detail-head container-narrow">
           <p className="post-detail-kicker">{post.category}</p>

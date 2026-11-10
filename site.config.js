@@ -2,21 +2,20 @@ const notionPageId = process.env.NOTION_PAGE_ID ?? "";
 
 const siteConfig = {
   blog: {
-    title: "DH.J",
-    description: "DH.J Blog",
+    title: "JDH",
+    description: "JDH - Technology Blog",
     language: "ko"
   },
   profile: {
     name: "Donghyeon Jeong",
-    handle: "@dhjeong",
-    intro: "Cyber Security Engineer",
+    handle: "@dhje0ng",
+    intro: "Security Researcher",
     avatar: "/blog/IMG_5214.jpeg",
     aboutMeUrl: "https://dhjeong.kr/"
   },
   social: {
     github: "https://github.com/dhje0ng",
     linkedin: "https://www.linkedin.com/in/donghyeon-jeong-87a274214",
-    x: "https://x.com/#",
     email: "mailto:dhje0ng@naver.com"
   },
   notion: {

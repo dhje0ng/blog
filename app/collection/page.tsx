@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { Header } from "@/components/layout/Header";
 import { CategoryCard } from "@/components/post/CategoryCard";
 import { getCategorySlug } from "@/lib/notion/posts";
 import { getPostsOrNull } from "@/lib/notion/safe";
@@ -32,7 +31,6 @@ export default async function CollectionPage() {
 
   return (
     <main>
-      <Header />
       <section className="container section-gap top-gap mobile-viewer-page">
         <div className="section-title-row">
           <h1>Collection</h1>

@@ -1,5 +1,4 @@
 import { ArticlesSearchClient } from "@/app/articles/ArticlesSearchClient";
-import { Header } from "@/components/layout/Header";
 import { getPostsOrNull } from "@/lib/notion/safe";
 
 export const revalidate = 900;
@@ -22,7 +21,6 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   if (!posts) {
     return (
       <main>
-        <Header />
         <section className="container section-gap top-gap mobile-viewer-page">
           <div className="section-title-row">
             <h1>Articles</h1>
@@ -56,7 +54,6 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
 
   return (
     <main>
-      <Header />
       <section className="container section-gap top-gap mobile-viewer-page">
         <div className="section-title-row">
           <h1>{sectionTitle}</h1>

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type { Route } from "next";
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
 import { getPostsOrNull } from "@/lib/notion/safe";
 import siteConfig from "@/site.config";
@@ -61,7 +60,6 @@ export default async function OverviewPage() {
 
   return (
     <main>
-      <Header />
       <section className="container overview-layout top-gap section-gap">
         <div className="overview-main-layout">
           <aside className="overview-profile-column">
@@ -96,13 +94,6 @@ export default async function OverviewPage() {
           </aside>
 
           <div className="overview-content-column">
-            <section className="overview-intro" aria-labelledby="journal-title">
-              <p className="eyebrow">Notes &amp; Perspectives</p>
-              <h2 id="journal-title">배우고, 탐구하고,<br />기록합니다.</h2>
-              <p className="overview-intro-copy">보안과 기술을 탐구하며 쌓아가는 생각과 경험.</p>
-              <Link href="/articles" className="intro-link">전체 아티클 보기 <span aria-hidden="true">↗</span></Link>
-            </section>
-
             {popular.length > 0 ? <section className="overview-section">
               <div className="overview-section-head">
                 <h2>추천 아티클</h2>

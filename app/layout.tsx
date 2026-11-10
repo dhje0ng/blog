@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { Header } from "@/components/layout/Header";
 import siteConfig from "@/site.config";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
+        <Header />
         {children}
         <footer className="site-footer">
           <div className="container site-footer-inner">© 2026 Donghyeon Jeong · Notes on security & technology</div>
