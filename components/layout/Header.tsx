@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import siteConfig from "@/site.config";
 
@@ -27,6 +28,7 @@ function getServerThemeSnapshot(): ThemeMode {
 }
 
 export function Header() {
+  const pathname = usePathname();
   // Theme lives on <html data-theme> (set pre-paint by the layout's inline script).
   // useSyncExternalStore reads it without an effect, avoiding cascading renders and FOUC.
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
@@ -73,12 +75,19 @@ export function Header() {
   return (
     <header className="gh-header">
       <div className="gh-header-inner">
-        <Link className="brand" href="/overview">
+        <Link className="brand" href="/">
           {siteConfig.blog.title}
         </Link>
 
+        <nav className="header-nav" aria-label="주 메뉴">
+          <Link href="/" aria-current={(pathname === "/" || pathname === "/overview") ? "page" : undefined}>Blog</Link>
+          <Link href="/collection" aria-current={pathname.startsWith("/collection") ? "page" : undefined}>Collection</Link>
+          {/* Full document navigation leaves the blog base path. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/">Portfolio ↗</a>
+        </nav>
         <div className="gh-header-tools">
-          <a href="/sitemap.xml" className="gh-icon-button" target="_blank" rel="noreferrer" aria-label="sitemap">
+          <a href="/blog/sitemap.xml" className="gh-icon-button" target="_blank" rel="noreferrer" aria-label="sitemap">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -86,7 +95,7 @@ export function Header() {
               />
             </svg>
           </a>
-          <a href="/rss.xml" className="gh-icon-button" target="_blank" rel="noreferrer" aria-label="rss feed">
+          <a href="/blog/rss.xml" className="gh-icon-button" target="_blank" rel="noreferrer" aria-label="rss feed">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -95,10 +104,10 @@ export function Header() {
             </svg>
           </a>
           <button type="button" className="gh-icon-button" onClick={handleShare} aria-label="share page">
-            🔗
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2" /></svg>
           </button>
           <button type="button" className="gh-icon-button" onClick={handleThemeToggle} aria-label="toggle color theme">
-            {theme === "light" ? "🌙" : "☀️"}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">{theme === "light" ? <path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z" /> : <><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2" /></>}</svg>
           </button>
         </div>
       </div>

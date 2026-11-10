@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: "cover"
 };
 
@@ -26,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <footer className="site-footer">
-          <div className="container site-footer-inner">CopyRight 2026 Donghyeon Jeong</div>
+          <div className="container site-footer-inner">© 2026 Donghyeon Jeong · Notes on security & technology</div>
         </footer>
         <Analytics />
       </body>

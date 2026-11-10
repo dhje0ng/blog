@@ -1,25 +1,12 @@
 import Image from "next/image";
 import type { Route } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PostListItem } from "@/components/post/PostListItem";
-import { ActivityHistorySection } from "@/app/overview/ActivityHistorySection";
 import { getPostsOrNull } from "@/lib/notion/safe";
-import type { PostSummary } from "@/lib/models/post";
 import siteConfig from "@/site.config";
 
 export const revalidate = 900;
-
-type ActivityCell = {
-  dateKey: string;
-  count: number;
-};
-
-type ActivityMonthLabel = {
-  month: string;
-  column: number;
-};
 
 function SocialLogo({ name }: { name: string }) {
   if (name === "github") {
@@ -63,79 +50,12 @@ function isPinnedPost(tags: string[]): boolean {
   return tags.some((tag) => tag.toLowerCase() === "pinned");
 }
 
-function formatDateKey(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function getYearActivity(posts: PostSummary[], year: number): { cells: ActivityCell[]; monthLabels: ActivityMonthLabel[] } {
-  const startOfYear = new Date(year, 0, 1);
-  const endOfYear = new Date(year, 11, 31);
-
-  const firstGridDay = new Date(startOfYear);
-  firstGridDay.setDate(startOfYear.getDate() - startOfYear.getDay());
-
-  const lastGridDay = new Date(endOfYear);
-  lastGridDay.setDate(endOfYear.getDate() + (6 - endOfYear.getDay()));
-
-  const countByDate = posts.reduce<Record<string, number>>((acc, post) => {
-    const rawDate = post.date || post.updateAt;
-    const date = new Date(rawDate);
-
-    if (!Number.isNaN(date.getTime())) {
-      const key = formatDateKey(date);
-      acc[key] = (acc[key] ?? 0) + 1;
-    }
-
-    return acc;
-  }, {});
-
-  const cells: ActivityCell[] = [];
-
-  const cursor = new Date(firstGridDay);
-
-  while (cursor <= lastGridDay) {
-    const dateKey = formatDateKey(cursor);
-
-    cells.push({
-      dateKey,
-      count: countByDate[dateKey] ?? 0
-    });
-
-    cursor.setDate(cursor.getDate() + 1);
-  }
-
-  const monthLabels = Array.from({ length: 12 }, (_, monthIndex) => {
-    const monthStart = new Date(year, monthIndex, 1);
-    const diffDays = Math.floor((monthStart.getTime() - firstGridDay.getTime()) / (1000 * 60 * 60 * 24));
-
-    return {
-      month: monthStart.toLocaleString("en-US", { month: "short" }),
-      column: Math.floor(diffDays / 7)
-    };
-  });
-
-  return { cells, monthLabels };
-}
-
 export default async function OverviewPage() {
-  const posts = await getPostsOrNull();
-
-  if (!posts) {
-    notFound();
-  }
+  const result = await getPostsOrNull();
+  const posts = result ?? [];
 
   const popular = posts.filter((post) => isPinnedPost(post.tags));
   const recent = posts.slice(0, 5);
-  const currentYear = new Date().getFullYear();
-  const activityYears = [currentYear, currentYear - 1, currentYear - 2].map((year) => {
-    const { cells, monthLabels } = getYearActivity(posts, year);
-
-    return {
-      year,
-      cells,
-      monthLabels
-    };
-  });
   const socialLinks = Object.entries(siteConfig.social).filter(([, href]) => Boolean(href));
   const collectionCount = new Set(posts.map((post) => post.category)).size;
 
@@ -166,7 +86,7 @@ export default async function OverviewPage() {
             </div>
             <p className="profile-intro">{siteConfig.profile.intro}</p>
             <nav className="overview-side-nav" aria-label="Overview navigation">
-              <Link href="/overview">Overview</Link>
+              <Link href="/" aria-current="page">Overview</Link>
               <Link href="/collection">Collection ({collectionCount})</Link>
               <Link href="/articles">Articles ({posts.length})</Link>
               <a href={siteConfig.profile.aboutMeUrl} target="_blank" rel="noreferrer noopener">
@@ -176,17 +96,22 @@ export default async function OverviewPage() {
           </aside>
 
           <div className="overview-content-column">
-            <ActivityHistorySection years={activityYears} />
+            <section className="overview-intro" aria-labelledby="journal-title">
+              <p className="eyebrow">Notes &amp; Perspectives</p>
+              <h2 id="journal-title">배우고, 탐구하고,<br />기록합니다.</h2>
+              <p className="overview-intro-copy">보안과 기술을 탐구하며 쌓아가는 생각과 경험.</p>
+              <Link href="/articles" className="intro-link">전체 아티클 보기 <span aria-hidden="true">↗</span></Link>
+            </section>
 
-            <section className="overview-section">
+            {popular.length > 0 ? <section className="overview-section">
               <div className="overview-section-head">
-                <h2>인기 아티클</h2>
+                <h2>추천 아티클</h2>
                 <Link href="/articles?section=popular" className="section-more-link">
                   더보기
                 </Link>
               </div>
               <div className="popular-grid">
-                {popular.map((post, index) => (
+                {popular.slice(0, 4).map((post, index) => (
                   <Link key={post.id} href={`/articles/${post.slug}` as Route} className="popular-card">
                     <div className="popular-preview" style={{ backgroundImage: `url(${post.thumbnail ?? ""})` }} aria-hidden="true" />
                     <div>
@@ -197,7 +122,7 @@ export default async function OverviewPage() {
                   </Link>
                 ))}
               </div>
-            </section>
+            </section> : null}
 
             <section className="overview-section">
               <div className="overview-section-head">
@@ -207,6 +132,7 @@ export default async function OverviewPage() {
                 </Link>
               </div>
               <div className="list-layout">
+                {recent.length === 0 ? <p className="overview-empty">{result === null ? "글을 불러오지 못했습니다. 잠시 후 다시 방문해 주세요." : "아직 등록된 글이 없습니다."}</p> : null}
                 {recent.map((post) => (
                   <PostListItem key={post.id} post={post} withPreview />
                 ))}

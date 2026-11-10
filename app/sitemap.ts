@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getPostsOrNull } from "@/lib/notion/safe";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dhjeong.kr";
+const BASE_URL = `${(process.env.NEXT_PUBLIC_SITE_URL ?? "https://dhjeong.kr").replace(/\/$/, "").replace(/\/blog$/, "")}/blog`;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = ["/", "/overview", "/articles", "/collection", "/rss.xml"];

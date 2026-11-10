@@ -1,6 +1,6 @@
 import { getPostsOrNull } from "@/lib/notion/safe";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dhjeong.kr";
+const BASE_URL = `${(process.env.NEXT_PUBLIC_SITE_URL ?? "https://dhjeong.kr").replace(/\/$/, "").replace(/\/blog$/, "")}/blog`;
 
 function escapeXml(value: string): string {
   return value

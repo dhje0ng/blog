@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: "/blog",
   images: {
     remotePatterns: [
       {
@@ -18,14 +19,11 @@ const nextConfig = {
   },
   async rewrites() {
     return {
-      beforeFiles: [
+      fallback: [
         {
-          source: "/resume",
-          destination: "https://resume-dhjeong.vercel.app/resume"
-        },
-        {
-          source: "/resume/:path*",
-          destination: "https://resume-dhjeong.vercel.app/resume/:path*"
+          source: "/:path*",
+          destination: "https://resume-dhjeong.vercel.app/:path*",
+          basePath: false
         }
       ]
     };
