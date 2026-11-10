@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import siteConfig from "@/site.config";
 
@@ -28,7 +27,6 @@ function getServerThemeSnapshot(): ThemeMode {
 }
 
 export function Header() {
-  const pathname = usePathname();
   // Theme lives on <html data-theme> (set pre-paint by the layout's inline script).
   // useSyncExternalStore reads it without an effect, avoiding cascading renders and FOUC.
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
@@ -83,13 +81,6 @@ export function Header() {
           {siteConfig.blog.title}
         </Link>
 
-        <nav className="header-nav" aria-label="주 메뉴">
-          <Link href="/" aria-current={(pathname === "/" || pathname === "/overview") ? "page" : undefined}>Blog</Link>
-          <Link href="/collection" aria-current={pathname.startsWith("/collection") ? "page" : undefined}>Collection</Link>
-          {/* Full document navigation leaves the blog base path. */}
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/">Portfolio ↗</a>
-        </nav>
         <div className="gh-header-tools">
           <button type="button" className="gh-icon-button" onClick={handleShare} aria-label="share page">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2" /></svg>

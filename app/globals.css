@@ -1239,9 +1239,6 @@ a {
 .gh-header-tools { gap: 4px; }
 .gh-icon-button { width: 44px; height: 44px; border-radius: 6px; }
 .gh-icon-button:hover { background: var(--accent-soft); color: var(--accent); }
-.header-nav { display: flex; gap: 24px; margin-left: 28px; font-size: 13px; color: var(--muted); }
-.header-nav a { padding: 12px 0; }
-.header-nav a[aria-current="page"] { color: var(--accent); }
 a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 .top-gap { padding-top: 64px; }
 .overview-main-layout { grid-template-columns: 220px minmax(0, 1fr); gap: 72px; }
@@ -1292,7 +1289,6 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 @media (max-width: 700px) {
   .container, .mobile-viewer-page, .overview-layout, .gh-header-inner { width: calc(100% - 40px); }
   .gh-header-inner { min-height: 68px; gap: 12px; flex-wrap: wrap; }
-  .header-nav { gap: 16px; margin-left: auto; }
   .gh-header-tools { gap: 0; margin-left: 0; }
   .gh-icon-button { width: 44px; }
   .overview-main-layout { grid-template-columns: 1fr; gap: 36px; }
@@ -1312,7 +1308,6 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 }
 @media (max-width: 420px) {
   .gh-header-inner { gap: 0; }
-  .header-nav { gap: 12px; font-size: 12px; }
   .popular-grid { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
