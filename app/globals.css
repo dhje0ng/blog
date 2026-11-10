@@ -540,50 +540,65 @@ a {
 
 
 .post-toc {
-  margin: 0;
-  padding: 12px 12px 12px 14px;
-  border: 1px solid var(--line-subtle);
-  border-radius: 12px;
-  background: var(--surface);
+  padding: 4px 8px 8px;
+  max-height: calc(100dvh - 128px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 .post-toc h2 {
-  margin: 0 0 8px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  margin: 0 0 20px;
   color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .04em;
 }
 
-.post-toc ol {
-  margin: 0;
-  padding-left: 14px;
-  display: grid;
-  gap: 5px;
+.post-toc ol { margin: 0; padding: 0; list-style: none; }
+.post-toc li { position: relative; }
+.post-toc li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 22px;
+  bottom: -22px;
+  width: 1px;
+  background: var(--border);
 }
-
-.post-toc li {
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.4;
-}
-
 .post-toc a {
-  color: inherit;
-  text-decoration: none;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  min-height: 44px;
+  padding: 11px 4px 11px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 22px;
+  overflow-wrap: anywhere;
 }
-
-.post-toc a:hover {
-  color: var(--text);
+.post-toc-node {
+  position: relative;
+  flex: 0 0 9px;
+  height: 9px;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
 }
-
-.post-toc-depth-2 {
-  margin-left: 10px;
+.post-toc a:hover { color: var(--text); }
+.post-toc a[aria-current="location"] { color: var(--accent); font-weight: 600; }
+.post-toc a[aria-current="location"] .post-toc-node {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
-
-.post-toc-depth-3 {
-  margin-left: 20px;
+.post-toc-depth-2 .post-toc-label { padding-left: 10px; }
+.post-toc-depth-3 .post-toc-label { padding-left: 20px; font-size: 12px; }
+.post-detail-body :is(h2, h3, h4)[id] { scroll-margin-top: 120px; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
 }
 
 .post-detail-body h2,
@@ -1043,6 +1058,8 @@ a {
     position: static;
     order: -1;
   }
+
+  .post-toc { max-height: 320px; padding: 16px 8px; border-block: 1px solid var(--border); }
 
   .overview-layout {
     width: min(980px, 92vw);

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { TableOfContents } from "@/components/post/TableOfContents";
 import { CodeBlockTabs } from "@/components/post/CodeBlockTabs";
 import { getPostBySlugOrNull } from "@/lib/notion/safe";
 
@@ -378,16 +379,11 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
 
           {!!tableOfContents.length && (
             <aside className="post-toc-sidebar" aria-label="Table of Contents">
-              <section className="post-toc">
-                <h2>Table of Contents</h2>
-                <ol>
-                  {tableOfContents.map((heading) => (
-                    <li key={heading.id} className={`post-toc-depth-${heading.level}`}>
-                      <a href={`#${heading.anchorId}`}>{renderInlineMarkdown(heading.text)}</a>
-                    </li>
-                  ))}
-                </ol>
-              </section>
+              <TableOfContents headings={tableOfContents.map((heading) => ({
+                anchorId: heading.anchorId,
+                level: heading.level,
+                label: renderInlineMarkdown(heading.text)
+              }))} />
             </aside>
           )}
         </div>
