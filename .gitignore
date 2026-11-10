@@ -8,3 +8,22 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 *.tsbuildinfo
+
+# Local notes and documentation
+*.[mM][dD]
+
+# Tests and generated test output
+**/tests/
+**/__tests__/
+*.test.*
+*.spec.*
+coverage/
+playwright-report/
+test-results/
+
+# Local debugging artifacts
+**/debug/
+**/__debug__/
+**/debug-artifacts/
+*.debug.*
+*.log
