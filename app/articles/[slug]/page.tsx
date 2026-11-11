@@ -291,100 +291,93 @@ export default async function ArticleDetailPage({ params }: PostPageProps) {
 
   return (
     <main>
-      <article className="post-detail-wrap mobile-viewer-page mobile-viewer-detail">
-        <div className="post-detail-head container-narrow">
+      <article className={`post-detail-wrap${tableOfContents.length ? " has-toc" : ""}`}>
+        <header className="post-detail-head">
           <p className="post-detail-kicker">{post.category}</p>
           <h1>{post.title}</h1>
-          <p className="post-detail-summary">{post.summary}</p>
+          {post.summary ? <p className="post-detail-summary">{post.summary}</p> : null}
           <div className="post-detail-meta">
             <span>{post.author}</span>
-            <span>·</span>
             <time>{post.updateAt}</time>
-            <span>·</span>
             <span>{post.readingMinutes} min read</span>
           </div>
-        </div>
-
-        {post.thumbnail ? (
-          <div className="post-detail-cover-wrap container-narrow">
+          {post.thumbnail ? (
             <div className="post-detail-cover" style={{ backgroundImage: `url(${post.thumbnail})` }} aria-hidden="true" />
-          </div>
-        ) : null}
+          ) : null}
+        </header>
 
-        <div className="post-detail-content-grid container-narrow">
-          <div className="post-detail-body">
-            {contentBlocks.map((block) => {
-              if (block.type === "heading") {
-                if (block.level === 1) {
-                  return (
-                    <h2 key={block.id} id={block.anchorId}>
-                      {renderInlineMarkdown(block.text)}
-                    </h2>
-                  );
-                }
+        {!!tableOfContents.length && (
+          <aside className="post-toc-sidebar">
+            <TableOfContents headings={tableOfContents.map((heading) => ({
+              anchorId: heading.anchorId,
+              level: heading.level,
+              label: renderInlineMarkdown(heading.text)
+            }))} />
+          </aside>
+        )}
 
-                if (block.level === 2) {
-                  return (
-                    <h3 key={block.id} id={block.anchorId}>
-                      {renderInlineMarkdown(block.text)}
-                    </h3>
-                  );
-                }
-
+        <div className="post-detail-body">
+          {contentBlocks.map((block) => {
+            if (block.type === "heading") {
+              if (block.level === 1) {
                 return (
-                  <h4 key={block.id} id={block.anchorId}>
+                  <h2 key={block.id} id={block.anchorId}>
                     {renderInlineMarkdown(block.text)}
-                  </h4>
+                  </h2>
                 );
               }
 
-              if (block.type === "image") {
+              if (block.level === 2) {
                 return (
-                  <figure key={block.id} className="post-detail-inline-image-wrap">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={block.src} alt={block.alt} className="post-detail-inline-image" loading="lazy" />
-                  </figure>
+                  <h3 key={block.id} id={block.anchorId}>
+                    {renderInlineMarkdown(block.text)}
+                  </h3>
                 );
               }
 
-              if (block.type === "code") {
-                return <CodeBlockTabs key={block.id} variants={block.variants} />;
-              }
+              return (
+                <h4 key={block.id} id={block.anchorId}>
+                  {renderInlineMarkdown(block.text)}
+                </h4>
+              );
+            }
 
-              if (block.type === "bookmark") {
-                return (
-                  <a
-                    key={block.id}
-                    className="post-detail-bookmark"
-                    href={block.href}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    <span className="post-detail-bookmark-title">{block.title}</span>
-                    <span className="post-detail-bookmark-url">{block.domain}</span>
-                  </a>
-                );
-              }
+            if (block.type === "image") {
+              return (
+                <figure key={block.id} className="post-detail-inline-image-wrap">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={block.src} alt={block.alt} className="post-detail-inline-image" loading="lazy" />
+                </figure>
+              );
+            }
 
-              return <p key={block.id}>{renderInlineMarkdown(block.text)}</p>;
-            })}
-            {!!post.tags.length && (
-              <ul className="post-tag-list" aria-label="post tags">
-                {post.tags.map((tag) => (
-                  <li key={tag}>{tag}</li>
-                ))}
-              </ul>
-            )}
-          </div>
+            if (block.type === "code") {
+              return <CodeBlockTabs key={block.id} variants={block.variants} />;
+            }
 
-          {!!tableOfContents.length && (
-            <aside className="post-toc-sidebar" aria-label="Table of Contents">
-              <TableOfContents headings={tableOfContents.map((heading) => ({
-                anchorId: heading.anchorId,
-                level: heading.level,
-                label: renderInlineMarkdown(heading.text)
-              }))} />
-            </aside>
+            if (block.type === "bookmark") {
+              return (
+                <a
+                  key={block.id}
+                  className="post-detail-bookmark"
+                  href={block.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <span className="post-detail-bookmark-title">{block.title}</span>
+                  <span className="post-detail-bookmark-url">{block.domain}</span>
+                </a>
+              );
+            }
+
+            return <p key={block.id}>{renderInlineMarkdown(block.text)}</p>;
+          })}
+          {!!post.tags.length && (
+            <ul className="post-tag-list" aria-label="post tags">
+              {post.tags.map((tag) => (
+                <li key={tag}>{tag}</li>
+              ))}
+            </ul>
           )}
         </div>
       </article>

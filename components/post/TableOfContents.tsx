@@ -60,8 +60,8 @@ export function TableOfContents({ headings }: { headings: Heading[] }) {
   }, [headings]);
 
   return (
-    <nav className="post-toc" aria-label="글 목차">
-      <h2>이 글의 목차</h2>
+    <nav className="post-toc" aria-label="Table of contents">
+      <h2>Table of contents</h2>
       <ol>
         {headings.map((heading) => (
           <li key={heading.anchorId} className={`post-toc-depth-${heading.level}`}>
